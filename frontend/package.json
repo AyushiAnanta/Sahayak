@@ -3,17 +3,21 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  
-    "scripts": {   
+  "scripts": {   
     "dev": "vite --host",   
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
-  "dependencies": { 
+  "dependencies": {
+    "@react-oauth/google": "^0.13.4",
+    "@tailwindcss/vite": "^4.2.0",
     "axios": "^1.13.4",
+    "motion": "^12.34.3",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-router-dom": "^7.13.0",
+    "tailwindcss": "^4.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
