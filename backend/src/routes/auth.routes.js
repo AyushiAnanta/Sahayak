@@ -3,7 +3,12 @@ import {
   registerUser,
   loginUser,
   refreshAccessToken,
+  logoutUser // <-- ADDED THIS HERE
 } from "../controllers/auth.controller.js";
+
+// ADD YOUR MIDDLEWARE IMPORT HERE
+// (Make sure this path matches where your actual middleware file is located!)
+import { verifyJWT } from "../middlewares/auth.middleware.js"; 
 
 const router = Router();
 
