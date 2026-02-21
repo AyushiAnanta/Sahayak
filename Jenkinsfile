@@ -16,6 +16,10 @@ pipeline {
         // We skipped the redundant NPM steps and go straight to Docker!
         stage('Deploy Application') {
             steps {
+                // 1. Generate the missing .env file on the fly
+                sh 'echo "GOOGLE_CLIENT_ID=dummy_key\nGOOGLE_CLIENT_SECRET=dummy_secret\nPORT=5000" > backend/.env'
+                
+                // 2. Start Docker
                 sh 'docker-compose up -d --build'
             }
         }
