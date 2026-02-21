@@ -99,6 +99,35 @@ export const loginUser = asyncHandler(async (req, res, next) => {
   );
 });
 
+export const logoutUser = asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+
+  if (!userId) {
+    throw new ApiError(401, "Not authenticated");
+  }
+
+  // remove refresh token from DB
+  await User.findByIdAndUpdate(userId, { refreshToken: "" });
+
+  // clear cookies
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+  });
+
+  return res.status(200).json(
+    new ApiResponse(200, {}, "Logged out successfully")
+  );
+});
+
+
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   const refreshToken =
     req.cookies?.refreshToken || req.body.refreshToken;
