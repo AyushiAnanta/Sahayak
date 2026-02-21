@@ -1,21 +1,12 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import axios from 'axios'
-import { useEffect } from 'react'
 
+import Authentication from './Authentication/Authenticate'
+import { GoogleOAuthProvider } from "@react-oauth/google";
 function App() {
-  const [count, setCount] = useState(0)
-
-  useEffect(() => {
-    axios.get('')
-  })
-
+  
   return (
-    <div>
-      <h1>Ye div ke ander likha hua hai</h1>
-    </div>
+    <GoogleOAuthProvider clientId="56318545794-and8lv8bqatv5r4car5b7h7imupudai6.apps.googleusercontent.com">
+    <Authentication />
+    </GoogleOAuthProvider>
   )
 }
 
