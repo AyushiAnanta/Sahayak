@@ -7,6 +7,7 @@ const AuthLayout = ({ children, showBranding = true }) => {
       <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center">
 
         {/* Branding Section */}
+
         {showBranding && (
           <div className="hidden lg:flex flex-col justify-center items-center gap-8">
 

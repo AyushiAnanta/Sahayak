@@ -10,10 +10,11 @@ const LoginForm = ({ switchToSignup }) => {
   });
 
   const [loading, setLoading] = useState(false);
-
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    setError("");
   };
 
 
@@ -21,13 +22,14 @@ const LoginForm = ({ switchToSignup }) => {
     const { identifier, password } = form;
 
     if (!identifier || !password) {
-      alert("Enter email/username and password");
+      setError("Enter email/username and password");
+      console.log("error")
       return;
     }
 
     try {
       setLoading(true);
-
+      setError("");
 
       const isEmail = identifier.includes("@");
 
@@ -39,11 +41,10 @@ const LoginForm = ({ switchToSignup }) => {
 
       localStorage.setItem("user", JSON.stringify(data.data || data));
 
-      alert("Login successful ");
       window.location.href = "/dashboard"; 
 
     } catch (err) {
-      alert(err.message);
+      setError(err.message || "Invalid email/username or password");
     } finally {
       setLoading(false);
     }
@@ -78,7 +79,10 @@ const LoginForm = ({ switchToSignup }) => {
           onChange={handleChange}
         />
       </div>
-
+      {/* ERROR MESSAGE */}
+      {error && (
+        <p className="mt-3 text-sm text-red-500 text-center">{error}</p>
+      )}
       <button
         onClick={handleLogin}
         disabled={loading}
