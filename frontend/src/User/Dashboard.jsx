@@ -15,7 +15,7 @@ const Dashboard = () => {
 
     navigate("/login");
     setTimeout(() => {
-      navigate(0);    // 🔥 force reload so Dashboard unmounts
+      navigate(0);   
     }, 50);
 
   } catch (error) {
