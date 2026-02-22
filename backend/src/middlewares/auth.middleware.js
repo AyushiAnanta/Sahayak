@@ -4,22 +4,16 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 
 export const verifyJWT = asyncHandler(async (req, res, next) => {
-  console.log(" Incoming Cookies:", req.cookies);
 
   const token =
     req.cookies?.accessToken ||
     req.headers.authorization?.replace("Bearer ", "");
-
-  console.log(" Access Token Received:", token);
-
   if (!token) {
     throw new ApiError(401, "Access token missing");
   }
 
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-
-    console.log(" Access Token Valid → User:", decoded.id);
 
     
    const userId = decoded.id || decoded._id;
@@ -36,7 +30,6 @@ const user = await User.findById(userId).lean();
 
     if (error.name === "TokenExpiredError") {
       const refreshToken = req.cookies?.refreshToken;
-      console.log("Refresh Token Present:", !!refreshToken);
 
       if (!refreshToken) {
         console.log(" No Refresh Token Found");
@@ -84,7 +77,6 @@ const user = await User.findById(userId).lean();
         return next();
 
       } catch (refreshErr) {
-        console.log(" Refresh Token Verification Failed", refreshErr);
         throw new ApiError(401, "Session expired. Login again.");
       }
     }

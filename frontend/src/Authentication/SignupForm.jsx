@@ -9,12 +9,11 @@ const SignupForm = ({ switchToLogin }) => {
     username: "",
     email: "",
     password: "",
-    role: "user", // ✅ default role
+    role: "user", 
   });
 
   const [loading, setLoading] = useState(false);
 
-  // handle input
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -31,7 +30,7 @@ const SignupForm = ({ switchToLogin }) => {
     try {
       setLoading(true);
 
-      await registerUser(form); // role included automatically
+      await registerUser(form);
 
       alert("Account created successfully 🎉");
       switchToLogin();
@@ -52,9 +51,7 @@ const SignupForm = ({ switchToLogin }) => {
         Join Sahāyak grievance portal
       </p>
 
-      {/* FORM */}
       <div className="flex flex-col gap-4 mt-6">
-        {/* FULL NAME */}
         <AuthInput
           name="name"
           type="text"
@@ -63,7 +60,6 @@ const SignupForm = ({ switchToLogin }) => {
           onChange={handleChange}
         />
 
-        {/* USERNAME */}
         <AuthInput
           name="username"
           type="text"
@@ -72,7 +68,6 @@ const SignupForm = ({ switchToLogin }) => {
           onChange={handleChange}
         />
 
-        {/* EMAIL */}
         <AuthInput
           name="email"
           type="email"
@@ -81,7 +76,6 @@ const SignupForm = ({ switchToLogin }) => {
           onChange={handleChange}
         />
 
-        {/* PASSWORD */}
         <AuthInput
           name="password"
           type="password"
@@ -90,7 +84,7 @@ const SignupForm = ({ switchToLogin }) => {
           onChange={handleChange}
         />
 
-        {/* ROLE SELECT */}
+
         <select
           name="role"
           value={form.role}
@@ -102,7 +96,6 @@ const SignupForm = ({ switchToLogin }) => {
         </select>
       </div>
 
-      {/* BUTTON */}
       <button
         onClick={handleSignup}
         disabled={loading}
@@ -111,12 +104,10 @@ const SignupForm = ({ switchToLogin }) => {
         {loading ? "Creating account..." : "Sign Up"}
       </button>
 
-      {/* GOOGLE LOGIN */}
       <div className="mt-4">
         <GoogleAuthButton />
       </div>
 
-      {/* LOGIN SWITCH */}
       <p className="text-center mt-6 text-sm text-neutral-600">
         Already have an account?
         <button

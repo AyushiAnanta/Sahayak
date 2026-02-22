@@ -6,7 +6,7 @@ import { generateTokens } from "../utils/token.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 
-//   REGISTER USER
+// REGISTER USER
 export const registerUser = asyncHandler(async (req, res) => {
   const { username, name, email, password, role } = req.body;
 
@@ -39,16 +39,20 @@ export const registerUser = asyncHandler(async (req, res) => {
 });
 
 
-// LOGIN 
+// LOGIN USER (FIXED)
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
-  if ((!email && !username) || !password)
-    throw new ApiError(400, "Email/Username and password are required");
+  const identifier = email || username;
+  if (!identifier || !password)
+    throw new ApiError(400, "Email/Username and password required");
 
-  const user = await User.findOne({ $or: [{ email }, { username }] }).select(
-    "+password"
-  );
+  // Detect email or username automatically
+  const query = identifier.includes("@")
+    ? { email: identifier }
+    : { username: identifier };
+
+  const user = await User.findOne(query).select("+password");
 
   if (!user) throw new ApiError(404, "User not found");
 
@@ -60,20 +64,22 @@ export const loginUser = asyncHandler(async (req, res) => {
   user.refreshToken = refreshToken;
   await user.save();
 
+  // COOKIE CONFIG
   const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     sameSite: "lax",
+    path: "/",
   };
 
   res.cookie("accessToken", accessToken, {
     ...cookieOptions,
-    maxAge: 15 * 60 * 1000,
+    maxAge: 1000 * 60 * 15,
   });
 
   res.cookie("refreshToken", refreshToken, {
     ...cookieOptions,
-    maxAge: 7 * 24 * 60 * 60 * 1000,
+    maxAge: 1000 * 60 * 60 * 24 * 7,
   });
 
   return res.status(200).json(
@@ -90,10 +96,13 @@ export const loginUser = asyncHandler(async (req, res) => {
 });
 
 
-// LOGOUT
+// LOGOUT (FIXED req.user undefined issue)
 export const logoutUser = asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  if (!userId) throw new ApiError(401, "Not authenticated");
+  const userId = req.user?._id || req.user?.id;
+
+  if (!userId) {
+    throw new ApiError(401, "Not authenticated");
+  }
 
   await User.findByIdAndUpdate(userId, { refreshToken: "" });
 
@@ -111,12 +120,13 @@ export const logoutUser = asyncHandler(async (req, res) => {
     path: "/",
   });
 
-  return res.status(200).json(
-    new ApiResponse(200, {}, "Logged out successfully")
-  );
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Logged out successfully"));
 });
 
 
+// CURRENT USER
 export const getCurrentUser = (req, res) => {
   return res.status(200).json({
     success: true,
@@ -124,14 +134,14 @@ export const getCurrentUser = (req, res) => {
   });
 };
 
+
+// REFRESH TOKEN (FIXED)
 export const refreshAccessToken = asyncHandler(async (req, res) => {
-  const refreshToken =
-    req.cookies?.refreshToken || req.body.refreshToken;
+  const refreshToken = req.cookies?.refreshToken;
 
   if (!refreshToken) throw new ApiError(401, "Refresh token missing");
 
   let decoded;
-
   try {
     decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
   } catch (e) {
@@ -141,26 +151,18 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   const user = await User.findById(decoded.id);
   if (!user) throw new ApiError(404, "User does not exist");
 
-
-  if (user.refreshToken && user.refreshToken !== refreshToken)
+  if (user.refreshToken !== refreshToken)
     throw new ApiError(401, "Invalid refresh token");
 
   const { accessToken } = generateTokens(user);
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     sameSite: "lax",
-    maxAge: 15 * 60 * 1000,
+    path: "/",
+    maxAge: 1000 * 60 * 15,
   });
-  
-  res.cookie("refreshToken", refreshToken, {
-  httpOnly: true,
-  secure: false,
-  sameSite: "lax",
-  path: "/",
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-});
 
   return res.status(200).json(
     new ApiResponse(200, { accessToken }, "New access token generated")
