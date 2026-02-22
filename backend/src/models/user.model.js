@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs"; // ✅ ADD THIS
+import bcrypt from "bcryptjs"; 
 
 const { Schema } = mongoose;
 

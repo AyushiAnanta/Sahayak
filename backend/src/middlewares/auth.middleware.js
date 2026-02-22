@@ -4,26 +4,22 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 
 export const verifyJWT = asyncHandler(async (req, res, next) => {
-  console.log("🔍 Incoming Cookies:", req.cookies);
+  console.log(" Incoming Cookies:", req.cookies);
 
-  // Read Access Token — cookies first
   const token =
     req.cookies?.accessToken ||
     req.headers.authorization?.replace("Bearer ", "");
 
-  console.log("🔑 Access Token Received:", token);
+  console.log(" Access Token Received:", token);
 
   if (!token) {
     throw new ApiError(401, "Access token missing");
   }
 
   try {
-    /** ------------------------------
-     * 1️⃣ VERIFY ACCESS TOKEN
-     * ------------------------------ */
     const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    console.log("🟢 Access Token Valid → User:", decoded.id);
+    console.log(" Access Token Valid → User:", decoded.id);
 
     
    const userId = decoded.id || decoded._id;
@@ -38,15 +34,12 @@ const user = await User.findById(userId).lean();
   } catch (error) {
     console.log("⚠ Access Token Error:", error.name);
 
-    /** ------------------------------
-     * 2️⃣ TOKEN EXPIRED → TRY REFRESH
-     * ------------------------------ */
     if (error.name === "TokenExpiredError") {
       const refreshToken = req.cookies?.refreshToken;
-      console.log("🔁 Refresh Token Present:", !!refreshToken);
+      console.log("Refresh Token Present:", !!refreshToken);
 
       if (!refreshToken) {
-        console.log("❌ No Refresh Token Found");
+        console.log(" No Refresh Token Found");
         throw new ApiError(401, "Session expired. Please login again.");
       }
 
@@ -59,25 +52,23 @@ const user = await User.findById(userId).lean();
         const user = await User.findById(decodedRefresh.id).lean();
 
         if (!user) {
-          console.log("❌ Refresh token user not found");
+          console.log("Refresh token user not found");
           throw new ApiError(401, "Invalid refresh token");
         }
 
-        // Generate new access token
         const newAccessToken = jwt.sign(
           { id: user._id },
           process.env.ACCESS_TOKEN_SECRET,
           { expiresIn: "15m" }
         );
 
-        console.log("🔐 New Access Token Generated");
+        console.log(" New Access Token Generated");
 
-        // 🔥 MUST HAVE: Path "/"
         res.cookie("accessToken", newAccessToken, {
           httpOnly: true,
-          secure: false,     // localhost
+          secure: false, 
           sameSite: "lax",
-          path: "/",         // 🔥 REQUIRED
+          path: "/",     
           maxAge: 15 * 60 * 1000,
         });
 
@@ -85,7 +76,7 @@ const user = await User.findById(userId).lean();
   httpOnly: true,
   secure: false,
   sameSite: "lax",
-  path: "/",           // 🔥 REQUIRED
+  path: "/",       
   maxAge: 7 * 24 * 60 * 60 * 1000,
 });
 
@@ -93,14 +84,11 @@ const user = await User.findById(userId).lean();
         return next();
 
       } catch (refreshErr) {
-        console.log("❌ Refresh Token Verification Failed", refreshErr);
+        console.log(" Refresh Token Verification Failed", refreshErr);
         throw new ApiError(401, "Session expired. Login again.");
       }
     }
 
-    /** -----------------------------------
-     * 3️⃣ TOKEN INVALID → FINAL FAILURE
-     * ----------------------------------- */
     throw new ApiError(401, "Invalid token");
   }
 });

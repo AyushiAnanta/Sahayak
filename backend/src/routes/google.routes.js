@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
-import "../config/passport.config.js";   // ✔ Correct path
+import "../config/passport.config.js";  
 import { googleCallback } from "../controllers/google.controller.js";
 
 const router = Router();

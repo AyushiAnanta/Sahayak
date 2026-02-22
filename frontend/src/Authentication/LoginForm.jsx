@@ -5,18 +5,18 @@ import { loginUser } from "../api/auth";
 
 const LoginForm = ({ switchToSignup }) => {
   const [form, setForm] = useState({
-    identifier: "", // email OR username
+    identifier: "", 
     password: "",
   });
 
   const [loading, setLoading] = useState(false);
 
-  // input handler
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // login handler
+
   const handleLogin = async () => {
     const { identifier, password } = form;
 
@@ -28,7 +28,7 @@ const LoginForm = ({ switchToSignup }) => {
     try {
       setLoading(true);
 
-      // detect if email or username
+
       const isEmail = identifier.includes("@");
 
       const payload = isEmail
@@ -39,7 +39,7 @@ const LoginForm = ({ switchToSignup }) => {
 
       localStorage.setItem("user", JSON.stringify(data.data || data));
 
-      alert("Login successful  ✅  ");
+      alert("Login successful ");
       window.location.href = "/dashboard"; 
 
     } catch (err) {
@@ -59,9 +59,8 @@ const LoginForm = ({ switchToSignup }) => {
         Login with email or username
       </p>
 
-      {/* FORM */}
       <div className="flex flex-col gap-4 mt-6">
-        {/* EMAIL OR USERNAME */}
+
         <AuthInput
           name="identifier"
           type="text"
@@ -70,7 +69,7 @@ const LoginForm = ({ switchToSignup }) => {
           onChange={handleChange}
         />
 
-        {/* PASSWORD */}
+
         <AuthInput
           name="password"
           type="password"
@@ -80,7 +79,6 @@ const LoginForm = ({ switchToSignup }) => {
         />
       </div>
 
-      {/* LOGIN BUTTON */}
       <button
         onClick={handleLogin}
         disabled={loading}
@@ -89,12 +87,10 @@ const LoginForm = ({ switchToSignup }) => {
         {loading ? "Logging in..." : "Login"}
       </button>
 
-      {/* GOOGLE LOGIN */}
       <div className="mt-4">
         <GoogleAuthButton />
       </div>
 
-      {/* SWITCH */}
       <p className="text-center mt-6 text-sm text-neutral-600">
         Don't have an account?
         <button

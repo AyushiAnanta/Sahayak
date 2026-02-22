@@ -5,9 +5,8 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { generateTokens } from "../utils/token.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-/* ================================================================
-   REGISTER USER
-================================================================ */
+
+//   REGISTER USER
 export const registerUser = asyncHandler(async (req, res) => {
   const { username, name, email, password, role } = req.body;
 
@@ -39,9 +38,8 @@ export const registerUser = asyncHandler(async (req, res) => {
   );
 });
 
-/* ================================================================
-   LOGIN USER (NORMAL)
-================================================================ */
+
+// LOGIN 
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
@@ -62,7 +60,6 @@ export const loginUser = asyncHandler(async (req, res) => {
   user.refreshToken = refreshToken;
   await user.save();
 
-  // **IMPORTANT FIX** – OAuth needs LAX
   const cookieOptions = {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
@@ -92,30 +89,34 @@ export const loginUser = asyncHandler(async (req, res) => {
   );
 });
 
-/* ================================================================
-   LOGOUT
-================================================================ */
+
+// LOGOUT
 export const logoutUser = asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   if (!userId) throw new ApiError(401, "Not authenticated");
 
   await User.findByIdAndUpdate(userId, { refreshToken: "" });
 
-  const cookieOptions = {
+  res.clearCookie("accessToken", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false,
     sameSite: "lax",
-  };
+    path: "/",
+  });
 
-  res.clearCookie("accessToken", cookieOptions);
-  res.clearCookie("refreshToken", cookieOptions);
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    path: "/",
+  });
 
-  return res.status(200).json(new ApiResponse(200, {}, "Logged out"));
+  return res.status(200).json(
+    new ApiResponse(200, {}, "Logged out successfully")
+  );
 });
 
-/* ================================================================
-   GET CURRENT USER (/auth/me)
-================================================================ */
+
 export const getCurrentUser = (req, res) => {
   return res.status(200).json({
     success: true,
@@ -123,9 +124,6 @@ export const getCurrentUser = (req, res) => {
   });
 };
 
-/* ================================================================
-   REFRESH ACCESS TOKEN
-================================================================ */
 export const refreshAccessToken = asyncHandler(async (req, res) => {
   const refreshToken =
     req.cookies?.refreshToken || req.body.refreshToken;
@@ -143,7 +141,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   const user = await User.findById(decoded.id);
   if (!user) throw new ApiError(404, "User does not exist");
 
-  // (Optional) Compare DB refreshToken ONLY if you store it
+
   if (user.refreshToken && user.refreshToken !== refreshToken)
     throw new ApiError(401, "Invalid refresh token");
 
@@ -160,7 +158,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
   httpOnly: true,
   secure: false,
   sameSite: "lax",
-  path: "/",           // 🔥 REQUIRED
+  path: "/",
   maxAge: 7 * 24 * 60 * 60 * 1000,
 });
 
