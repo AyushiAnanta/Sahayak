@@ -1,0 +1,31 @@
+{
+  "direction": "ltr",
+
+  "welcome": "ਵਾਪਸੀ 'ਤੇ ਸੁਆਗਤ ਹੈ",
+  "subtitle": "ਈਮੇਲ ਜਾਂ ਯੂਜ਼ਰਨੇਮ ਨਾਲ ਲਾਗਇਨ ਕਰੋ",
+  "identifierPlaceholder": "ਈਮੇਲ ਜਾਂ ਯੂਜ਼ਰਨੇਮ",
+  "passwordPlaceholder": "ਪਾਸਵਰਡ",
+  "loginButton": "ਲਾਗਇਨ ਕਰੋ",
+  "loggingIn": "ਲਾਗਇਨ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
+  "noAccount": "ਖਾਤਾ ਨਹੀਂ ਹੈ?",
+  "signup": "ਸਾਈਨ ਅਪ",
+  "errorFill": "ਸਾਰੇ ਫੀਲਡ ਲਾਜ਼ਮੀ ਹਨ",
+  "invalid": "ਗਲਤ ਈਮੇਲ ਜਾਂ ਪਾਸਵਰਡ",
+
+  "createAccount": "ਖਾਤਾ ਬਣਾਓ",
+  "signupSubtitle": "ਸਹਾਇਕ ਸ਼ਿਕਾਇਤ ਪੋਰਟਲ ਨਾਲ ਜੁੜੋ",
+  "fullNamePlaceholder": "ਪੂਰਾ ਨਾਮ",
+  "usernamePlaceholder": "ਯੂਜ਼ਰਨੇਮ",
+  "emailPlaceholder": "ਈਮੇਲ ਪਤਾ",
+  "user": "ਯੂਜ਼ਰ",
+  "officer": "ਅਧਿਕਾਰੀ",
+  "creatingAccount": "ਖਾਤਾ ਬਣਾਇਆ ਜਾ ਰਿਹਾ ਹੈ...",
+  "signupButton": "ਸਾਈਨ ਅਪ",
+  "haveAccount": "ਪਹਿਲਾਂ ਹੀ ਖਾਤਾ ਹੈ?",
+  "login": "ਲਾਗਇਨ",
+  "signupSuccess": "ਖਾਤਾ ਸਫਲਤਾਪੂਰਵਕ ਬਣ ਗਿਆ",
+  "signupFailed": "ਸਾਈਨਅਪ ਅਸਫਲ",
+
+  "brandTitle": "ਸਹਾਇਕ",
+"brandDescription": "ਤੁਹਾਡਾ ਡਿਜ਼ਿਟਲ ਸ਼ਿਕਾਇਤ ਸਹਾਇਕ ਜੋ ਨਾਗਰਿਕਾਂ ਨੂੰ ਅਧਿਕਾਰੀਆਂ ਨਾਲ ਪ੍ਰਭਾਵਸ਼ਾਲੀ ਤਰੀਕੇ ਨਾਲ ਜੋੜਦਾ ਹੈ।"
+}

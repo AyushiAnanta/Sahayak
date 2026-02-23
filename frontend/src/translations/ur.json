@@ -1,0 +1,31 @@
+{
+  "direction": "rtl",
+
+  "welcome": "واپس آنے پر خوش آمدید",
+  "subtitle": "ای میل یا صارف نام سے لاگ ان کریں",
+  "identifierPlaceholder": "ای میل یا صارف نام",
+  "passwordPlaceholder": "پاس ورڈ",
+  "loginButton": "لاگ ان",
+  "loggingIn": "لاگ ان ہو رہا ہے...",
+  "noAccount": "اکاؤنٹ نہیں ہے؟",
+  "signup": "سائن اپ",
+  "errorFill": "تمام فیلڈز ضروری ہیں",
+  "invalid": "غلط ای میل یا پاس ورڈ",
+
+  "createAccount": "اکاؤنٹ بنائیں",
+  "signupSubtitle": "سہایک شکایتی پورٹل میں شامل ہوں",
+  "fullNamePlaceholder": "پورا نام",
+  "usernamePlaceholder": "صارف نام",
+  "emailPlaceholder": "ای میل پتہ",
+  "user": "صارف",
+  "officer": "افسر",
+  "creatingAccount": "اکاؤنٹ بنایا جا رہا ہے...",
+  "signupButton": "سائن اپ",
+  "haveAccount": "پہلے سے اکاؤنٹ ہے؟",
+  "login": "لاگ ان",
+  "signupSuccess": "اکاؤنٹ کامیابی سے بن گیا",
+  "signupFailed": "سائن اپ ناکام",
+
+  "brandTitle": "ਸਹਾਇਕ",
+"brandDescription": "ਤੁਹਾਡਾ ਡਿਜ਼ਿਟਲ ਸ਼ਿਕਾਇਤ ਸਹਾਇਕ ਜੋ ਨਾਗਰਿਕਾਂ ਨੂੰ ਅਧਿਕਾਰੀਆਂ ਨਾਲ ਪ੍ਰਭਾਵਸ਼ਾਲੀ ਤਰੀਕੇ ਨਾਲ ਜੋੜਦਾ ਹੈ।"
+}

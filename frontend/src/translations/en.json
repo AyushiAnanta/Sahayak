@@ -1,0 +1,31 @@
+{
+  "direction": "ltr",
+
+  "welcome": "Welcome Back",
+  "subtitle": "Login with email or username",
+  "identifierPlaceholder": "Email or Username",
+  "passwordPlaceholder": "Password",
+  "loginButton": "Login",
+  "loggingIn": "Logging in...",
+  "noAccount": "Don't have an account?",
+  "signup": "Sign Up",
+  "errorFill": "All fields are required",
+  "invalid": "Invalid email/username or password",
+
+  "createAccount": "Create Account",
+  "signupSubtitle": "Join Sahayak grievance portal",
+  "fullNamePlaceholder": "Full Name",
+  "usernamePlaceholder": "Username",
+  "emailPlaceholder": "Email address",
+  "user": "User",
+  "officer": "Officer",
+  "creatingAccount": "Creating account...",
+  "signupButton": "Sign Up",
+  "haveAccount": "Already have an account?",
+  "login": "Login",
+  "signupSuccess": "Account created successfully",
+  "signupFailed": "Signup failed",
+
+  "brandTitle": "sahayak",
+  "brandDescription": "Your digital grievance assistant helping citizens connect with authorities efficiently."
+}

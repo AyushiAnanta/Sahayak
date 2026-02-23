@@ -1,0 +1,53 @@
+{
+  "direction": "ltr",
+
+  "welcome": "ফিরে আসার জন্য স্বাগতম",
+
+  "subtitle": "ইমেল বা ইউজারনেম দিয়ে লগইন করুন",
+
+  "identifierPlaceholder": "ইমেল অথবা ইউজারনেম",
+
+  "passwordPlaceholder": "পাসওয়ার্ড",
+
+  "loginButton": "লগইন",
+
+  "loggingIn": "লগইন করা হচ্ছে...",
+
+  "noAccount": "অ্যাকাউন্ট নেই?",
+
+  "signup": "সাইন আপ",
+
+  "errorFill": "সবগুলো ঘর পূরণ করা বাধ্যতামূলক",
+
+  "invalid": "ইমেল/ইউজারনেম বা পাসওয়ার্ড সঠিক নয়",
+
+  "createAccount": "অ্যাকাউন্ট তৈরি করুন",
+
+  "signupSubtitle": "সহায়ক অভিযোগ পোর্টালে যোগ দিন",
+
+  "fullNamePlaceholder": "পূর্ণ নাম",
+
+  "usernamePlaceholder": "ইউজারনেম",
+
+  "emailPlaceholder": "ইমেল ঠিকানা",
+
+  "user": "ব্যবহারকারী",
+
+  "officer": "অফিসার",
+
+  "creatingAccount": "অ্যাকাউন্ট তৈরি করা হচ্ছে...",
+
+  "signupButton": "সাইন আপ",
+
+  "haveAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে?",
+
+  "login": "লগইন",
+
+  "signupSuccess": "অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে",
+
+  "signupFailed": "সাইন আপ ব্যর্থ হয়েছে",
+
+  "brandTitle": "সহায়ক",
+
+  "brandDescription": "আপনার ডিজিটাল অভিযোগ সহায়ক — নাগরিকদের দ্রুত ও কার্যকরভাবে প্রশাসনের সঙ্গে সংযোগ করায় সাহায্য করে।"
+}

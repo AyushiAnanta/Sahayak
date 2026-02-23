@@ -39,7 +39,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 });
 
 
-// LOGIN USER (FIXED)
+// LOGIN USER 
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
@@ -47,7 +47,6 @@ export const loginUser = asyncHandler(async (req, res) => {
   if (!identifier || !password)
     throw new ApiError(400, "Email/Username and password required");
 
-  // Detect email or username automatically
   const query = identifier.includes("@")
     ? { email: identifier }
     : { username: identifier };
@@ -64,7 +63,6 @@ export const loginUser = asyncHandler(async (req, res) => {
   user.refreshToken = refreshToken;
   await user.save();
 
-  // COOKIE CONFIG
   const cookieOptions = {
     httpOnly: true,
     secure: false,
@@ -96,7 +94,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 });
 
 
-// LOGOUT (FIXED req.user undefined issue)
+// LOGOUT 
 export const logoutUser = asyncHandler(async (req, res) => {
   const userId = req.user?._id || req.user?.id;
 
@@ -135,7 +133,7 @@ export const getCurrentUser = (req, res) => {
 };
 
 
-// REFRESH TOKEN (FIXED)
+// REFRESH TOKEN 
 export const refreshAccessToken = asyncHandler(async (req, res) => {
   const refreshToken = req.cookies?.refreshToken;
 

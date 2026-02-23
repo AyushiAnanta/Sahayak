@@ -1,0 +1,31 @@
+{
+  "direction": "ltr",
+
+  "welcome": "पुन्हा स्वागत आहे",
+  "subtitle": "ईमेल किंवा वापरकर्तानावाने लॉगिन करा",
+  "identifierPlaceholder": "ईमेल किंवा वापरकर्तानाव",
+  "passwordPlaceholder": "पासवर्ड",
+  "loginButton": "प्रवेश करा",
+  "loggingIn": "लॉगिन होत आहे...",
+  "noAccount": "अकाउंट नाही?",
+  "signup": "साइन अप",
+  "errorFill": "सर्व फील्ड आवश्यक आहेत",
+  "invalid": "अवैध ईमेल किंवा पासवर्ड",
+
+  "createAccount": "खाते तयार करा",
+  "signupSubtitle": "सहायक तक्रार पोर्टलमध्ये सामील व्हा",
+  "fullNamePlaceholder": "पूर्ण नाव",
+  "usernamePlaceholder": "वापरकर्तानाव",
+  "emailPlaceholder": "ईमेल पत्ता",
+  "user": "वापरकर्ता",
+  "officer": "अधिकारी",
+  "creatingAccount": "खाते तयार होत आहे...",
+  "signupButton": "साइन अप",
+  "haveAccount": "आधीच खाते आहे?",
+  "login": "लॉगिन",
+  "signupSuccess": "खाते यशस्वीरित्या तयार झाले",
+  "signupFailed": "साइनअप अयशस्वी",
+
+  "brandTitle": "सहायक",
+"brandDescription": "तुमचा डिजिटल तक्रार सहाय्यक जो नागरिकांना अधिकाऱ्यांशी प्रभावीपणे जोडतो."
+}
