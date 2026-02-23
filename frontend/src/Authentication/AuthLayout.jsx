@@ -32,7 +32,8 @@ const AuthLayout = ({ children, showBranding = true }) => {
         {showBranding && (
           <div className="hidden lg:flex flex-col justify-center items-center gap-8">
             <h1 className="text-7xl font-bold text-[#ffe6a7]">
-              {t.brandTitle || "bruh"}
+            {/*{t.brandTitle || "sahayak"}*/}
+            {"chuglimanch"}
             </h1>
 
             <p className="text-neutral-300 text-center max-w-md">
