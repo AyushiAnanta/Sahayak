@@ -31,13 +31,21 @@ const departmentSchema = new Schema(
     },
 
     deptHead: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
         required: true,
         index: true,
         trim : true
     },
 
-    category_handled: {
+    officers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      }
+    ],
+
+    category: {
       type: String,
       required: true,
       index: true,
@@ -52,7 +60,7 @@ const departmentSchema = new Schema(
       lowercase: true,
       lowercase: true,
       trim: true,
-      enum:["Kotputli", "Alwar", "Laxmangarh", "Los Santos", "Wyoming"]
+      enum:["Kotputli", "Alwar", "Laxmangarh", "Jaipur", "Dausa"]
     },
     pincode:{
       type: String,
