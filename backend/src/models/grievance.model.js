@@ -105,4 +105,4 @@ const grievanceSchema = new Schema({
     timestamps: true
 })
 
-export const Grievance = mongoose.model("Grievance")
+export const Grievance = mongoose.model("Grievance", grievanceSchema)

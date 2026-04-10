@@ -1,86 +1,31 @@
-import { ApiError } from "../utils/ApiError.js";
-import { asyncHandler } from "../utils/asyncHandler.js";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
+// verifyJWT — reads accessToken from cookie, validates it, attaches user to req
 export const verifyJWT = asyncHandler(async (req, res, next) => {
+  const token = req.cookies?.accessToken;
+  if (!token) throw new ApiError(401, "Unauthorized — no token");
 
-  const token =
-    req.cookies?.accessToken ||
-    req.headers.authorization?.replace("Bearer ", "");
-  if (!token) {
-    throw new ApiError(401, "Access token missing");
-  }
-
+  let decoded;
   try {
-    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-
-    
-   const userId = decoded.id || decoded._id;
-
-if (!userId) throw new ApiError(401, "Invalid token payload");
-
-const user = await User.findById(userId).lean();
-
-    req.user = user;
-    return next();
-
-  } catch (error) {
-    console.log("⚠ Access Token Error:", error.name);
-
-    if (error.name === "TokenExpiredError") {
-      const refreshToken = req.cookies?.refreshToken;
-
-      if (!refreshToken) {
-        console.log(" No Refresh Token Found");
-        throw new ApiError(401, "Session expired. Please login again.");
-      }
-
-      try {
-        const decodedRefresh = jwt.verify(
-          refreshToken,
-          process.env.REFRESH_TOKEN_SECRET
-        );
-
-        const user = await User.findById(decodedRefresh.id).lean();
-
-        if (!user) {
-          console.log("Refresh token user not found");
-          throw new ApiError(401, "Invalid refresh token");
-        }
-
-        const newAccessToken = jwt.sign(
-          { id: user._id },
-          process.env.ACCESS_TOKEN_SECRET,
-          { expiresIn: "15m" }
-        );
-
-        console.log(" New Access Token Generated");
-
-        res.cookie("accessToken", newAccessToken, {
-          httpOnly: true,
-          secure: false, 
-          sameSite: "lax",
-          path: "/",     
-          maxAge: 15 * 60 * 1000,
-        });
-
-        res.cookie("refreshToken", refreshToken, {
-  httpOnly: true,
-  secure: false,
-  sameSite: "lax",
-  path: "/",       
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-});
-
-        req.user = user;
-        return next();
-
-      } catch (refreshErr) {
-        throw new ApiError(401, "Session expired. Login again.");
-      }
-    }
-
-    throw new ApiError(401, "Invalid token");
+    decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  } catch {
+    throw new ApiError(401, "Invalid or expired access token");
   }
+
+  const user = await User.findById(decoded._id).select("-password -refreshToken");
+  if (!user) throw new ApiError(401, "User not found");
+
+  req.user = user;
+  next();
 });
+
+// authorizeRoles — checks that req.user.role is one of the allowed roles
+export const authorizeRoles = (...roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    throw new ApiError(403, `Access denied. Required role: ${roles.join(" or ")}`);
+  }
+  next();
+};
