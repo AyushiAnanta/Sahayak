@@ -9,8 +9,7 @@ import CreateGrievance from "./pages/citizens/CreateGrievance";
 import Complaints from "./pages/citizens/Complaints";
 
 // OPTIONAL (if still using)
-import Status from "./User/Status";
-import Profile from "./User/Profile";
+import Profile from "./pages/citizens/Profile";
 
 function App() {
   return (
@@ -30,7 +29,6 @@ function App() {
         <Route path="/dashboard/complaints" element={<Complaints />} />
 
         {/* OPTIONAL */}
-        <Route path="/dashboard/status" element={<Status />} />
         <Route path="/dashboard/profile" element={<Profile />} />
 
       </Routes>

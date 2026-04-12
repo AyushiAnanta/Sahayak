@@ -290,33 +290,50 @@ const CreateGrievance = () => {
 
           {/* 🖼️ PROOF (DRAG + DROP) */}
           <div
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              handleProof(e.dataTransfer.files[0]);
-            }}
-            className="mt-6 border-2 border-dashed border-gray-600 p-6 rounded-xl text-center"
-          >
-            Upload Proof (optional)
+  onDragOver={(e) => e.preventDefault()}
+  onDrop={(e) => {
+    e.preventDefault();
+    handleProof(e.dataTransfer.files[0]);
+  }}
+  className="mt-6 border-2 border-dashed border-gray-600 p-8 rounded-xl text-center bg-[#1f1f23] hover:border-[#6c584c] transition"
+>
+  {/* ICON */}
+  <p className="text-3xl mb-2">📁</p>
 
-            <input
-              type="file"
-              hidden
-              id="proofUpload"
-              accept="image/*"
-              onChange={(e) => handleProof(e.target.files[0])}
-            />
+  {/* MAIN TEXT */}
+  <p className="text-lg font-medium text-gray-300">
+    Drag & drop your image here
+  </p>
 
-            <label htmlFor="proofUpload" className="underline block mt-2 cursor-pointer">
-              Select Image
-            </label>
+  {/* OR TEXT */}
+  <p className="text-sm text-gray-500 mt-1 mb-3">
+    or
+  </p>
 
-            {form.proofImage && (
-              <p className="text-green-400 mt-2">
-                {form.proofImage.name}
-              </p>
-            )}
-          </div>
+  {/* HIDDEN INPUT */}
+  <input
+    type="file"
+    hidden
+    id="proofUpload"
+    accept="image/*"
+    onChange={(e) => handleProof(e.target.files[0])}
+  />
+
+  {/* BUTTON STYLE LABEL */}
+  <label
+    htmlFor="proofUpload"
+    className="inline-block px-4 py-2 bg-[#6c584c] text-white rounded-lg cursor-pointer hover:opacity-90 transition"
+  >
+    Select Image
+  </label>
+
+  {/* FILE NAME */}
+  {form.proofImage && (
+    <p className="text-green-400 mt-3 text-sm">
+      ✅ {form.proofImage.name}
+    </p>
+  )}
+</div>
 
           {error && <p className="text-red-400 mt-4">{error}</p>}
 

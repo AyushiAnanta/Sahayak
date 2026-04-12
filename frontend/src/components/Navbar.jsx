@@ -63,19 +63,7 @@ const Navbar = ({ user, onLogout }) => {
             Complaints
           </button>
 
-          <button
-            onClick={() => navigate("/dashboard/status")}
-            className={`${isActive("/dashboard/status")} hover:text-white`}
-          >
-            Status
-          </button>
-
-          <button
-            onClick={() => navigate("/dashboard/profile")}
-            className={`${isActive("/dashboard/profile")} hover:text-white`}
-          >
-            Profile
-          </button>
+    
 
           {/* 🌐 LANGUAGE ICON */}
           <button className="text-xl">🌐</button>
@@ -106,25 +94,17 @@ const Navbar = ({ user, onLogout }) => {
                 {/* OPTIONS */}
                 <div className="flex flex-col mt-3 gap-2">
 
-                  <button
-                    onClick={() => {
-                      navigate("/dashboard/profile");
-                      setOpen(false);
-                    }}
-                    className="hover:bg-gray-700 p-2 rounded text-left"
-                  >
-                    👤 Profile
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      navigate("/dashboard/status");
-                      setOpen(false);
-                    }}
-                    className="hover:bg-gray-700 p-2 rounded text-left"
-                  >
-                    📄 Status
-                  </button>
+                 <button
+                  onClick={() => {
+                    navigate("/dashboard/profile");
+                    setOpen(false);
+                  }}
+                  className={`p-2 rounded text-left hover:bg-gray-700 ${
+                    isActive("/dashboard/profile") ? "bg-gray-700" : ""
+                  }`}
+                >
+                  👤 Profile
+                </button>
 
                   <button
                     onClick={() => setShowConfirm(true)}
