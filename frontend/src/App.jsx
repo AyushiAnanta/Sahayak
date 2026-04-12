@@ -1,7 +1,14 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+// AUTH
 import Authentication from "./Authentication/Authenticate";
-import Dashboard from "./User/Dashboard";
-import GrievanceForm from "./components/GrievanceForm";
+
+// CITIZEN PAGES
+import Dashboard from "./pages/citizens/Dashboard";
+import CreateGrievance from "./pages/citizens/CreateGrievance";
+import Complaints from "./pages/citizens/Complaints";
+
+// OPTIONAL (if still using)
 import Status from "./User/Status";
 import Profile from "./User/Profile";
 
@@ -10,18 +17,21 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        {/* Login / Signup */}
+        {/* AUTH */}
         <Route path="/" element={<Authentication />} />
         <Route path="/login" element={<Authentication />} />
         <Route path="/signup" element={<Authentication />} />
 
-        {/* Dashboard with Nested Routes */}
-        <Route path="/dashboard" element={<Dashboard />}>
-          <Route index element={<GrievanceForm />} />       
-          <Route path="grievance" element={<GrievanceForm />} />
-          <Route path="status" element={<Status />} />
-          <Route path="profile" element={<Profile />} />
-        </Route>
+        {/* DASHBOARD */}
+        <Route path="/dashboard" element={<Dashboard />} />
+
+        {/* CITIZEN ROUTES */}
+        <Route path="/dashboard/create" element={<CreateGrievance />} />
+        <Route path="/dashboard/complaints" element={<Complaints />} />
+
+        {/* OPTIONAL */}
+        <Route path="/dashboard/status" element={<Status />} />
+        <Route path="/dashboard/profile" element={<Profile />} />
 
       </Routes>
     </BrowserRouter>
