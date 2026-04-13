@@ -12,6 +12,12 @@ import Complaints from "./pages/citizens/Complaints";
 import Status from "./User/Status";
 import Profile from "./User/Profile";
 
+import ManageUsers          from "./pages/admin/ManageUsers";
+import GrievanceReports     from "./pages/admin/GrievanceReports";
+import CommunicateDepartments from "./pages/admin/CommunicateDepartments";
+import AdminDashboard       from "./pages/admin/Dashboard";
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -32,6 +38,12 @@ function App() {
         {/* OPTIONAL */}
         <Route path="/dashboard/status" element={<Status />} />
         <Route path="/dashboard/profile" element={<Profile />} />
+
+        {/* Admin Routes */}
+        <Route path="/admin"              element={<AdminDashboard />} />
+        <Route path="/admin/users"        element={<ManageUsers />} />
+        <Route path="/admin/grievances"   element={<GrievanceReports />} />
+        <Route path="/admin/communicate"  element={<CommunicateDepartments />} />
 
       </Routes>
     </BrowserRouter>
