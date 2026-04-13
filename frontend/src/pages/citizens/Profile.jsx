@@ -1,8 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
 
 const Profile = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+
+  const [user, setUser] = useState(storedUser);
+  const [editMode, setEditMode] = useState(false);
+
+  const handleChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = () => {
+    localStorage.setItem("user", JSON.stringify(user));
+    setEditMode(false);
+    alert("Profile updated!");
+  };
 
   if (!user) {
     return (
@@ -15,7 +28,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-[#1f1f23] text-white">
 
-      {/* ✅ NAVBAR */}
+      {/* NAVBAR */}
       <Navbar
         user={user}
         onLogout={() => {
@@ -24,63 +37,128 @@ const Profile = () => {
         }}
       />
 
-      {/* ✅ CONTENT */}
       <div className="pt-24 flex justify-center px-6">
 
-        <div className="w-full max-w-xl bg-[#2a2a2f] p-8 rounded-2xl shadow-lg border border-gray-700">
+        <div className="w-full max-w-3xl bg-[#2a2a2f] p-8 rounded-2xl shadow-lg border border-gray-700">
 
-          {/* TITLE */}
-          <h2 className="text-3xl font-bold text-[#e8d4a2] mb-6">
-            Profile
-          </h2>
+          {/* HEADER */}
+          <div className="flex justify-between items-center mb-8">
+            <h2 className="text-3xl font-bold text-[#e8d4a2]">
+              Profile
+            </h2>
 
-          {/* PROFILE CARD */}
-          <div className="flex flex-col items-center text-center">
-
-            {/* AVATAR */}
-            <img
-              src={`https://api.dicebear.com/7.x/bottts/svg?seed=${user?.name}`}
-              alt="avatar"
-              className="w-20 h-20 rounded-full bg-gray-800 p-2 border border-gray-600 mb-4"
-            />
-
-            {/* NAME */}
-            <h3 className="text-xl font-semibold">
-              {user.name || "N/A"}
-            </h3>
-
-            {/* EMAIL */}
-            <p className="text-sm text-gray-400 truncate max-w-[200px]">
-              {user.email || "N/A"}
-            </p>
+            {!editMode ? (
+              <button
+                onClick={() => setEditMode(true)}
+                className="bg-[#6c584c] px-5 py-2 rounded-lg"
+              >
+                Edit
+              </button>
+            ) : (
+              <button
+                onClick={handleSave}
+                className="bg-green-500 px-5 py-2 rounded-lg"
+              >
+                Save
+              </button>
+            )}
           </div>
 
-          {/* DETAILS */}
-          <div className="mt-8 space-y-4">
+          {/* AVATAR */}
+          <div className="flex flex-col items-center mb-8">
+            <img
+              src={`https://api.dicebear.com/7.x/bottts/svg?seed=${user?.name}`}
+              className="w-24 h-24 rounded-full bg-gray-800 p-2 border border-gray-600"
+            />
+            <p className="mt-3 text-lg font-semibold">{user.name}</p>
+            <p className="text-sm text-gray-400">{user.email}</p>
+          </div>
 
-            <div className="flex justify-between border-b border-gray-700 pb-2">
-              <span className="text-gray-400">Username</span>
-              <span>{user.username || "N/A"}</span>
-            </div>
+          {/* FORM */}
+          <div className="grid md:grid-cols-2 gap-6">
 
-            <div className="flex justify-between border-b border-gray-700 pb-2">
-              <span className="text-gray-400">Email</span>
-              <span className="truncate max-w-[150px]">
-                {user.email || "N/A"}
-              </span>
-            </div>
+            <InputField
+              label="Full Name"
+              name="name"
+              value={user.name}
+              editMode={editMode}
+              onChange={handleChange}
+            />
 
-            <div className="flex justify-between border-b border-gray-700 pb-2">
-              <span className="text-gray-400">User ID</span>
-              <span className="truncate max-w-[150px]">
-                {user._id || "N/A"}
-              </span>
-            </div>
+            <InputField
+              label="Username"
+              name="username"
+              value={user.username}
+              editMode={editMode}
+              onChange={handleChange}
+            />
 
+            <InputField
+              label="Email"
+              name="email"
+              value={user.email}
+              editMode={editMode}
+              onChange={handleChange}
+            />
+
+            <InputField
+              label="Contact Number"
+              name="contact"
+              value={user.contact}
+              editMode={editMode}
+              onChange={handleChange}
+            />
+
+            <InputField
+              label="Location"
+              name="location"
+              value={user.location}
+              editMode={editMode}
+              onChange={handleChange}
+            />
+
+            <InputField
+              label="Pincode"
+              name="pincode"
+              value={user.pincode}
+              editMode={editMode}
+              onChange={handleChange}
+            />
+
+          </div>
+
+          {/* USER ID */}
+          <div className="mt-8 text-sm text-gray-500">
+            User ID: {user._id}
           </div>
 
         </div>
       </div>
+    </div>
+  );
+};
+
+// 🔥 NEW INPUT COMPONENT (MODERN)
+const InputField = ({ label, name, value, editMode, onChange }) => {
+  return (
+    <div className="flex flex-col">
+
+      <label className="text-sm text-gray-400 mb-1">
+        {label}
+      </label>
+
+      {editMode ? (
+        <input
+          name={name}
+          value={value || ""}
+          onChange={onChange}
+          className="bg-[#1f1f23] border border-gray-600 px-3 py-2 rounded-lg focus:outline-none focus:border-[#6c584c]"
+        />
+      ) : (
+        <div className="bg-[#1f1f23] px-3 py-2 rounded-lg border border-gray-700">
+          {value || "N/A"}
+        </div>
+      )}
     </div>
   );
 };
