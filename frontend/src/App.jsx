@@ -14,7 +14,7 @@ import Profile from "./User/Profile";
 
 import ManageUsers          from "./pages/admin/ManageUsers";
 import GrievanceReports     from "./pages/admin/GrievanceReports";
-import CommunicateDepartments from "./pages/admin/CommunicateDepartments";
+import CommunicateDepartments from "./pages/admin/ManageDepartments";
 import AdminDashboard       from "./pages/admin/Dashboard";
 
 
