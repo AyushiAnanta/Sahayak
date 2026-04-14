@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import AuthInput from "./AuthInput";
 import GoogleAuthButton from "./GoogleAuthButton";
 import { loginUser } from "../api/auth";
-
 import hi from "../translations/hi.json";
 import mr from "../translations/mr.json";
 import ur from "../translations/ur.json";
@@ -10,14 +9,11 @@ import pa from "../translations/pa.json";
 import bn from "../translations/bn.json";
 import en from "../translations/en.json";
 
-const TEXTS = { en, hi, mr, ur, pa,bn };
+const TEXTS = { en, hi, mr, ur, pa, bn };
 
 const LoginForm = ({ switchToSignup, lang = "en" }) => {
-  const [form, setForm] = useState({
-    identifier: "",
-    password: "",
-  });
-
+  const [mode, setMode] = useState("citizen"); // "citizen" | "admin"
+  const [form, setForm] = useState({ identifier: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -28,45 +24,57 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
     setError("");
   };
 
-  const handleLogin = async () => {
-  const { identifier, password } = form;
+  const handleModeSwitch = (newMode) => {
+    setMode(newMode);
+    setForm({ identifier: "", password: "" });
+    setError("");
+  };
 
-  if (!identifier || !password) {
-    setError(t.errorFill || "Enter email/username and password");
-    return;
-  }
+  const handleLogin = async () => {
+    const { identifier, password } = form;
+    if (!identifier || !password) {
+      setError(t.errorFill || "Enter email/username and password");
+      return;
+    }
 
   try {
     setLoading(true);
     setError("");
 
-    const isEmail = identifier.includes("@");
+      const isEmail = identifier.includes("@");
+      const payload = isEmail
+        ? { email: identifier, password }
+        : { username: identifier, password };
 
-    const payload = isEmail
-      ? { email: identifier, password }
-      : { username: identifier, password };
+      const data = await loginUser(payload);
+      const user = data.data.data.user;
 
-    const data = await loginUser(payload);
+      // ── role check ──────────────────────────────────────────
+      if (mode === "admin" && user.role !== "admin") {
+        setError("This account does not have admin privileges.");
+        return;
+      }
+      if (mode === "citizen" && user.role === "admin") {
+        setError("Admin accounts must use the Admin login tab.");
+        return;
+      }
+      // ────────────────────────────────────────────────────────
 
-    const userData = data.data || data;
+      localStorage.setItem("user", JSON.stringify(user));
 
-    localStorage.setItem("user", JSON.stringify(userData));
-
-    // 🚀 ROLE BASED NAVIGATION
-    if (userData.role === "officer") {
-      window.location.href = "/department";
-    } else if (userData.role === "admin") {
-      window.location.href = "/admin";
-    } else {
-      window.location.href = "/dashboard";
+      if (user.role === "admin") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/dashboard";
+      }
+    } catch (err) {
+      setError(err.message || t.invalid || "Invalid email/username or password");
+    } finally {
+      setLoading(false);
     }
+  };
 
-  } catch (err) {
-    setError(err.message || t.invalid || "Invalid email/username or password");
-  } finally {
-    setLoading(false);
-  }
-};
+  const isAdmin = mode === "admin";
 
   return (
     <div
@@ -76,24 +84,58 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
         textAlign: t.direction === "rtl" ? "right" : "left",
       }}
     >
-      <h2 className="text-3xl font-bold text-center text-neutral-800">
-        {t.welcome || "Welcome Back"}
-      </h2>
+      {/* ── Mode toggle ── */}
+      <div className="flex bg-neutral-100 rounded-xl p-1 mb-6 gap-1">
+        <button
+          onClick={() => handleModeSwitch("citizen")}
+          className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${
+            !isAdmin
+              ? "bg-white shadow text-neutral-800"
+              : "text-neutral-500 hover:text-neutral-700"
+          }`}
+        >
+          Citizen login
+        </button>
+        <button
+          onClick={() => handleModeSwitch("admin")}
+          className={`flex-1 py-2 rounded-lg text-sm font-semibold transition ${
+            isAdmin
+              ? "bg-white shadow text-neutral-800"
+              : "text-neutral-500 hover:text-neutral-700"
+          }`}
+        >
+          Admin login
+        </button>
+      </div>
 
-      <p className="text-center mt-2 text-sm text-neutral-500">
-        {t.subtitle || "Login with email or username"}
+      {/* ── Heading ── */}
+      <h2 className="text-3xl font-bold text-center text-neutral-800">
+        {isAdmin ? "Admin Access" : (t.welcome || "Welcome Back")}
+      </h2>
+      <p className="text-center mt-2 text-sm text-neutral-500 mb-6">
+        {isAdmin
+          ? "Login with your admin credentials"
+          : (t.subtitle || "Login with email or username")}
       </p>
 
-      <div className="flex flex-col gap-4 mt-6">
+      {/* ── Admin badge ── */}
+      {isAdmin && (
+        <div className="flex items-center justify-center mb-4">
+          <span className="bg-[#3C3489]/10 text-[#3C3489] text-xs font-semibold px-3 py-1 rounded-full">
+            Admin portal — restricted access
+          </span>
+        </div>
+      )}
 
+      {/* ── Inputs ── */}
+      <div className="flex flex-col gap-4">
         <AuthInput
           name="identifier"
           type="text"
-          placeholder={t.identifierPlaceholder || "Email or Username"}
+          placeholder={isAdmin ? "Admin username or email" : (t.identifierPlaceholder || "Email or Username")}
           value={form.identifier}
           onChange={handleChange}
         />
-
         <AuthInput
           name="password"
           type="password"
@@ -107,17 +149,27 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
         <p className="mt-3 text-sm text-red-500 text-center">{error}</p>
       )}
 
+      {/* ── Submit ── */}
       <button
         onClick={handleLogin}
         disabled={loading}
-        className="w-full mt-6 py-3 rounded-xl bg-[#6c584c] hover:bg-[#5a483f] text-white font-semibold transition disabled:opacity-50"
+        className={`w-full mt-6 py-3 rounded-xl text-white font-semibold transition disabled:opacity-50 ${
+          isAdmin
+            ? "bg-[#3C3489] hover:bg-[#26215C]"
+            : "bg-[#6c584c] hover:bg-[#5a483f]"
+        }`}
       >
-        {loading ? (t.loggingIn || "Logging in...") : (t.loginButton || "Login")}
+        {loading
+          ? (t.loggingIn || "Logging in...")
+          : isAdmin ? "Login as Admin" : (t.loginButton || "Login")}
       </button>
 
-      <div className="mt-4">
-        <GoogleAuthButton />
-      </div>
+      {/* Google auth only for citizens */}
+      {!isAdmin && (
+        <div className="mt-4">
+          <GoogleAuthButton />
+        </div>
+      )}
 
       <p className="text-center mt-6 text-sm text-neutral-600">
         {t.noAccount || "Don't have an account?"}
