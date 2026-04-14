@@ -7,9 +7,11 @@ import Authentication from "./Authentication/Authenticate";
 import Dashboard from "./pages/citizens/Dashboard";
 import CreateGrievance from "./pages/citizens/CreateGrievance";
 import Complaints from "./pages/citizens/Complaints";
-
-// OPTIONAL (if still using)
 import Profile from "./pages/citizens/Profile";
+
+//  DEPARTMENT PAGES
+import DepartmentDashboard from "./pages/department/Dashboard";
+import AssignedComplaints from "./pages/department/AssignedComplaints";
 
 function App() {
   return (
@@ -21,15 +23,15 @@ function App() {
         <Route path="/login" element={<Authentication />} />
         <Route path="/signup" element={<Authentication />} />
 
-        {/* DASHBOARD */}
-        <Route path="/dashboard" element={<Dashboard />} />
-
         {/* CITIZEN ROUTES */}
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/create" element={<CreateGrievance />} />
         <Route path="/dashboard/complaints" element={<Complaints />} />
-
-        {/* OPTIONAL */}
         <Route path="/dashboard/profile" element={<Profile />} />
+
+        {/* DEPARTMENT ROUTES */}
+        <Route path="/department" element={<DepartmentDashboard />} />
+        <Route path="/department/complaints" element={<AssignedComplaints />} />
 
       </Routes>
     </BrowserRouter>

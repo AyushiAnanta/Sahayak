@@ -29,34 +29,44 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
   };
 
   const handleLogin = async () => {
-    const { identifier, password } = form;
+  const { identifier, password } = form;
 
-    if (!identifier || !password) {
-      setError(t.errorFill || "Enter email/username and password");
-      return;
-    }
+  if (!identifier || !password) {
+    setError(t.errorFill || "Enter email/username and password");
+    return;
+  }
 
-    try {
-      setLoading(true);
-      setError("");
+  try {
+    setLoading(true);
+    setError("");
 
-      const isEmail = identifier.includes("@");
+    const isEmail = identifier.includes("@");
 
-      const payload = isEmail
-        ? { email: identifier, password }
-        : { username: identifier, password };
+    const payload = isEmail
+      ? { email: identifier, password }
+      : { username: identifier, password };
 
-      const data = await loginUser(payload);
+    const data = await loginUser(payload);
 
-      localStorage.setItem("user", JSON.stringify(data.data || data));
+    const userData = data.data || data;
 
+    localStorage.setItem("user", JSON.stringify(userData));
+
+    // 🚀 ROLE BASED NAVIGATION
+    if (userData.role === "officer") {
+      window.location.href = "/department";
+    } else if (userData.role === "admin") {
+      window.location.href = "/admin";
+    } else {
       window.location.href = "/dashboard";
-    } catch (err) {
-      setError(err.message || t.invalid || "Invalid email/username or password");
-    } finally {
-      setLoading(false);
     }
-  };
+
+  } catch (err) {
+    setError(err.message || t.invalid || "Invalid email/username or password");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div
