@@ -1,33 +1,47 @@
 services:
+
   # 1. The Database (MongoDB)
   database:
     image: mongo:latest
     ports:
       - "27017:27017"
     volumes:
-      - mongo-data:/data/db # This saves your data so it doesn't delete when Docker stops
+      - mongo-data:/data/db
 
-  # 2. Your Node.js Backend
+  # 2. Python AI Service — must start before backend so backend can call it
+  ai-service:
+    build: ./ai-service
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./ai-service/.env
+    environment:
+      - PORT=8001
+    volumes:
+      - ./ai-service:/app   # live reload during dev
+
+  # 3. Node.js Backend
   backend:
     build: ./backend
     ports:
       - "5001:5000"
     depends_on:
       - database
-    env_file:             # <-- ADD THIS
-      - ./backend/.env    # <-- ADD THIS
+      - ai-service           # wait for AI service before starting
+    env_file:
+      - ./backend/.env
     environment:
       - PORT=5000
-      - MONGO_URI=mongodb://database:27017/chuglimanch # Connects directly to the container above
+      - MONGO_URI=mongodb://database:27017/aigrievance
+      - PYTHON_AI_SERVICE_URL=http://ai-service:8001   # internal Docker DNS
 
-  # 3. Your React Frontend
+  # 4. React Frontend
   frontend:
     build: ./frontend
     ports:
-      - "5173:5173" # If you use Vite, change these to "5173:5173"
+      - "5173:5173"
     depends_on:
-      - backend # Wait for the backend to start before starting the frontend
+      - backend
 
-# This sets up the permanent storage for your database
 volumes:
   mongo-data:

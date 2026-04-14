@@ -1,0 +1,14 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+groq
+deep-translator
+langdetect
+sentence-transformers
+scikit-learn
+numpy
+pytesseract
+Pillow
+pdfplumber
+pdf2image
+python-multipart
