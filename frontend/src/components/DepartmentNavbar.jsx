@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const Navbar = ({ user, onLogout }) => {
+const DepartmentNavbar = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -9,9 +9,9 @@ const Navbar = ({ user, onLogout }) => {
   const [showConfirm, setShowConfirm] = useState(false);
   const dropdownRef = useRef();
 
-  const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.name || "user"}`;
+  const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.name || "officer"}`;
 
-  // 🔐 CLOSE DROPDOWN ON OUTSIDE CLICK
+  // 🔐 CLOSE DROPDOWN
   useEffect(() => {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -22,53 +22,44 @@ const Navbar = ({ user, onLogout }) => {
     return () => window.removeEventListener("click", handler);
   }, []);
 
-  // ✅ ACTIVE LINK STYLE
+  // ✅ ACTIVE LINK
   const isActive = (path) =>
     location.pathname === path ? "text-white font-semibold" : "text-gray-300";
 
   return (
     <>
-      {/* ✅ FIXED NAVBAR */}
+      {/* NAVBAR */}
       <nav className="fixed top-0 left-0 w-full z-50 bg-[#1f1f23]/80 backdrop-blur-md border-b border-gray-700 px-10 py-4 flex justify-between items-center">
 
         {/* LOGO */}
         <h1
           className="text-2xl font-bold text-[#e8d4a2] cursor-pointer"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate("/department")}
         >
           Sahayak
         </h1>
 
-        {/* NAV LINKS */}
+        {/* LINKS */}
         <div className="flex gap-8 items-center font-medium">
 
           <button
-            onClick={() => navigate("/dashboard")}
-            className={`${isActive("/dashboard")} hover:text-white`}
+            onClick={() => navigate("/department")}
+            className={`${isActive("/department")} hover:text-white`}
           >
-            Home
+            Dashboard
           </button>
 
           <button
-            onClick={() => navigate("/dashboard/create")}
-            className={`${isActive("/dashboard/create")} hover:text-white`}
-          >
-            Create
-          </button>
-
-          <button
-            onClick={() => navigate("/dashboard/complaints")}
-            className={`${isActive("/dashboard/complaints")} hover:text-white`}
+            onClick={() => navigate("/department/complaints")}
+            className={`${isActive("/department/complaints")} hover:text-white`}
           >
             Complaints
           </button>
 
-    
+          {/* OPTIONAL FUTURE */}
+          {/* <button className="text-gray-300 hover:text-white">Reports</button> */}
 
-          {/* 🌐 LANGUAGE ICON */}
-          <button className="text-xl">🌐</button>
-
-          {/* 👤 PROFILE */}
+          {/* PROFILE */}
           <div className="relative" ref={dropdownRef}>
             <img
               src={avatarUrl}
@@ -88,23 +79,26 @@ const Navbar = ({ user, onLogout }) => {
                     <p className="text-sm text-gray-400 truncate">
                       {user?.email}
                     </p>
+                    <p className="text-xs text-blue-400 mt-1">
+                      {user?.role?.toUpperCase()}
+                    </p>
                   </div>
                 </div>
 
                 {/* OPTIONS */}
                 <div className="flex flex-col mt-3 gap-2">
 
-                 <button
-                  onClick={() => {
-                    navigate("/dashboard/profile");
-                    setOpen(false);
-                  }}
-                  className={`p-2 rounded text-left hover:bg-gray-700 ${
-                    isActive("/dashboard/profile") ? "bg-gray-700" : ""
-                  }`}
-                >
-                  👤 Profile
-                </button>
+                  <button
+                    onClick={() => {
+                      navigate("/department/profile");
+                      setOpen(false);
+                    }}
+                    className={`p-2 rounded text-left hover:bg-gray-700 ${
+                      isActive("/department/profile") ? "bg-gray-700" : ""
+                    }`}
+                  >
+                    👤 Profile
+                  </button>
 
                   <button
                     onClick={() => setShowConfirm(true)}
@@ -119,7 +113,7 @@ const Navbar = ({ user, onLogout }) => {
         </div>
       </nav>
 
-      {/* ✅ LOGOUT MODAL */}
+      {/* LOGOUT MODAL */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
 
@@ -152,4 +146,4 @@ const Navbar = ({ user, onLogout }) => {
   );
 };
 
-export default Navbar;
+export default DepartmentNavbar;

@@ -9,7 +9,6 @@ import CreateGrievance from "./pages/citizens/CreateGrievance";
 import Complaints from "./pages/citizens/Complaints";
 
 // OPTIONAL (if still using)
-import Status from "./User/Status";
 import Profile from "./User/Profile";
 
 import ManageUsers          from "./pages/admin/ManageUsers";
@@ -17,6 +16,10 @@ import GrievanceReports     from "./pages/admin/GrievanceReports";
 import CommunicateDepartments from "./pages/admin/ManageDepartments";
 import AdminDashboard       from "./pages/admin/Dashboard";
 
+//  DEPARTMENT PAGES
+import DepartmentDashboard from "./pages/department/Dashboard";
+import AssignedComplaints from "./pages/department/AssignedComplaints";
+import DepartmentProfile from "./pages/department/DepartmentProfile";
 
 function App() {
   return (
@@ -39,6 +42,10 @@ function App() {
         <Route path="/admin/users"        element={<ManageUsers />} />
         <Route path="/admin/grievances"   element={<GrievanceReports />} />
         <Route path="/admin/communicate"  element={<CommunicateDepartments />} />
+        {/* DEPARTMENT ROUTES */}
+        <Route path="/department" element={<DepartmentDashboard />} />
+        <Route path="/department/complaints" element={<AssignedComplaints />} />
+        <Route path="/department/profile" element={<DepartmentProfile />} />
 
       </Routes>
     </BrowserRouter>

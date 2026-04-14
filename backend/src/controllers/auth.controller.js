@@ -10,32 +10,51 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 export const registerUser = asyncHandler(async (req, res) => {
   const { username, name, email, password, role } = req.body;
 
+  console.log("📝 REGISTER REQUEST:", req.body);
+
+  // ✅ VALIDATION
   if (!username || !email || !password || !name) {
     throw new ApiError(400, "All fields are required");
   }
 
+  // ✅ CHECK EXISTING USERS
   const existingEmail = await User.findOne({ email });
-  if (existingEmail) throw new ApiError(409, "Email already registered");
+  if (existingEmail) {
+    console.log("❌ Email already exists");
+    throw new ApiError(409, "Email already registered");
+  }
 
   const existingUsername = await User.findOne({ username });
-  if (existingUsername) throw new ApiError(409, "Username not available");
+  if (existingUsername) {
+    console.log("❌ Username already exists");
+    throw new ApiError(409, "Username not available");
+  }
+
+  // ✅ ROLE CONTROL (VERY IMPORTANT)
+  const allowedRoles = ["user", "officer"]; 
+  const finalRole = allowedRoles.includes(role) ? role : "user";
 
   const user = await User.create({
     username,
     name,
     email,
     password,
-    role: role || "user",
+    role: finalRole,
   });
 
-  return res.status(201).json(
-    new ApiResponse(201, {
+  console.log("✅ USER CREATED:", user.email, "| ROLE:", user.role);
+
+  return res.status(201).json({
+    success: true,
+    user: {
       id: user._id,
       username: user.username,
+      name: user.name,
       email: user.email,
       role: user.role,
-    }, "User registered successfully")
-  );
+    },
+    message: "User registered successfully",
+  });
 });
 
 
@@ -43,30 +62,42 @@ export const registerUser = asyncHandler(async (req, res) => {
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
+  console.log("🔐 LOGIN REQUEST:", req.body);
+
   const identifier = email || username;
-  if (!identifier || !password)
+
+  if (!identifier || !password) {
     throw new ApiError(400, "Email/Username and password required");
+  }
 
   const query = identifier.includes("@")
     ? { email: identifier }
     : { username: identifier };
 
-  // Must explicitly select +password and +refreshToken since both are select:false
   const user = await User.findOne(query).select("+password +refreshToken");
 
-  if (!user) throw new ApiError(404, "User not found");
+  if (!user) {
+    console.log("❌ USER NOT FOUND");
+    throw new ApiError(404, "User not found");
+  }
+
+  console.log("👤 USER FOUND:", user.email, "| ROLE:", user.role);
 
   const isCorrect = await user.isPasswordCorrect(password);
-  if (!isCorrect) throw new ApiError(401, "Invalid credentials");
+
+  if (!isCorrect) {
+    console.log("❌ PASSWORD WRONG");
+    throw new ApiError(401, "Invalid credentials");
+  }
+
+  console.log("✅ PASSWORD MATCH");
 
   const { accessToken, refreshToken } = generateTokens(user);
 
-  // Use findByIdAndUpdate instead of user.save() — avoids select:false field issues
-  // and prevents the password pre-save hook from re-hashing on every login
   await User.findByIdAndUpdate(
     user._id,
     { $set: { refreshToken } },
-    { new: true }
+    { returnDocument: "after" } // ✅ FIX deprecated warning
   );
 
   const cookieOptions = {
@@ -79,26 +110,28 @@ export const loginUser = asyncHandler(async (req, res) => {
   res
     .cookie("accessToken", accessToken, {
       ...cookieOptions,
-      maxAge: 1000 * 60 * 15,           // 15 minutes
+      maxAge: 1000 * 60 * 15,
     })
     .cookie("refreshToken", refreshToken, {
       ...cookieOptions,
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     });
 
-  return res.status(200).json(
-    new ApiResponse(200, {
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        username: user.username,
-        role: user.role,
-      },
-    }, "Login successful")
-  );
-});
+  console.log("🚀 LOGIN SUCCESS:", { id: user._id, role: user.role });
 
+  // ✅ CLEAN RESPONSE
+  return res.status(200).json({
+    success: true,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+    },
+    message: "Login successful",
+  });
+});
 
 // LOGOUT — clears refreshToken from DB and clears both cookies
 export const logoutUser = asyncHandler(async (req, res) => {
