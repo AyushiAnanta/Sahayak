@@ -7,28 +7,49 @@ const Navbar = ({ user, onLogout }) => {
 
   const [open, setOpen] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+
+  // ✅ Selected language (persisted)
+  const [selectedLang, setSelectedLang] = useState(
+    localStorage.getItem("lang") || "en"
+  );
+
   const dropdownRef = useRef();
+  const langRef = useRef();
 
   const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.name || "user"}`;
 
-  // 🔐 CLOSE DROPDOWN ON OUTSIDE CLICK
+  // 🌍 Languages
+  const languages = [
+    { code: "en", label: "English" },
+    { code: "hi", label: "हिन्दी" },
+    { code: "mr", label: "मराठी" },
+    { code: "pa", label: "ਪੰਜਾਬੀ" },
+    { code: "bn", label: "বাংলা" },
+    { code: "ur", label: "اردو" },
+  ];
+
+  // 🔐 Close dropdowns on outside click
   useEffect(() => {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setOpen(false);
       }
+      if (langRef.current && !langRef.current.contains(e.target)) {
+        setLangOpen(false);
+      }
     };
+
     window.addEventListener("click", handler);
     return () => window.removeEventListener("click", handler);
   }, []);
 
-  // ✅ ACTIVE LINK STYLE
+  // ✅ Active route
   const isActive = (path) =>
     location.pathname === path ? "text-white font-semibold" : "text-gray-300";
 
   return (
     <>
-      {/* ✅ FIXED NAVBAR */}
       <nav className="fixed top-0 left-0 w-full z-50 bg-[#1f1f23]/80 backdrop-blur-md border-b border-gray-700 px-10 py-4 flex justify-between items-center">
 
         {/* LOGO */}
@@ -63,10 +84,52 @@ const Navbar = ({ user, onLogout }) => {
             Complaints
           </button>
 
-    
+          {/* 🌐 LANGUAGE DROPDOWN */}
+          <div
+            className="relative"
+            ref={langRef} >
+            <button
+              onClick={() => setLangOpen(!langOpen)}
+              className="text-xl hover:scale-110 transition"
+            >
+              🌐
+            </button>
 
-          {/* 🌐 LANGUAGE ICON */}
-          <button className="text-xl">🌐</button>
+            {langOpen && (
+              <div className="absolute right-0 mt-3 w-44 bg-[#2a2a2f] text-white rounded-xl shadow-xl border border-gray-700 overflow-hidden">
+
+                {languages.map((lang) => {
+                  const isSelected = selectedLang === lang.code;
+
+                  return (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        setSelectedLang(lang.code);
+                        localStorage.setItem("lang", lang.code);
+                        setLangOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-4 py-2 transition
+                        ${
+                          isSelected
+                            ? "bg-[#6c584c]/30 text-[#e8d4a2]"
+                            : "hover:bg-gray-700"
+                        }
+                      `}
+                    >
+                      <span>{lang.label}</span>
+
+                      {/* ✅ TICK */}
+                      {isSelected && (
+                        <span className="text-green-400 font-bold">✔</span>
+                      )}
+                    </button>
+                  );
+                })}
+
+              </div>
+            )}
+          </div>
 
           {/* 👤 PROFILE */}
           <div className="relative" ref={dropdownRef}>
@@ -94,17 +157,17 @@ const Navbar = ({ user, onLogout }) => {
                 {/* OPTIONS */}
                 <div className="flex flex-col mt-3 gap-2">
 
-                 <button
-                  onClick={() => {
-                    navigate("/dashboard/profile");
-                    setOpen(false);
-                  }}
-                  className={`p-2 rounded text-left hover:bg-gray-700 ${
-                    isActive("/dashboard/profile") ? "bg-gray-700" : ""
-                  }`}
-                >
-                  👤 Profile
-                </button>
+                  <button
+                    onClick={() => {
+                      navigate("/dashboard/profile");
+                      setOpen(false);
+                    }}
+                    className={`p-2 rounded text-left hover:bg-gray-700 ${
+                      isActive("/dashboard/profile") ? "bg-gray-700" : ""
+                    }`}
+                  >
+                    👤 Profile
+                  </button>
 
                   <button
                     onClick={() => setShowConfirm(true)}
@@ -116,10 +179,11 @@ const Navbar = ({ user, onLogout }) => {
               </div>
             )}
           </div>
+
         </div>
       </nav>
 
-      {/* ✅ LOGOUT MODAL */}
+      {/* 🔒 LOGOUT MODAL */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
 

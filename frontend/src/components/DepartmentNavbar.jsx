@@ -7,17 +7,38 @@ const DepartmentNavbar = ({ user, onLogout }) => {
 
   const [open, setOpen] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+
+  const [selectedLang, setSelectedLang] = useState(
+    localStorage.getItem("lang") || "en"
+  );
+
   const dropdownRef = useRef();
+  const langRef = useRef();
 
   const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.name || "officer"}`;
 
-  // 🔐 CLOSE DROPDOWN
+  // 🌍 Languages
+  const languages = [
+    { code: "en", label: "English" },
+    { code: "hi", label: "हिन्दी" },
+    { code: "mr", label: "मराठी" },
+    { code: "pa", label: "ਪੰਜਾਬੀ" },
+    { code: "bn", label: "বাংলা" },
+    { code: "ur", label: "اردو" },
+  ];
+
+  // 🔐 CLOSE DROPDOWNS
   useEffect(() => {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setOpen(false);
       }
+      if (langRef.current && !langRef.current.contains(e.target)) {
+        setLangOpen(false);
+      }
     };
+
     window.addEventListener("click", handler);
     return () => window.removeEventListener("click", handler);
   }, []);
@@ -56,10 +77,51 @@ const DepartmentNavbar = ({ user, onLogout }) => {
             Complaints
           </button>
 
-          {/* OPTIONAL FUTURE */}
-          {/* <button className="text-gray-300 hover:text-white">Reports</button> */}
+          {/* 🌐 LANGUAGE DROPDOWN */}
+          <div className="relative" ref={langRef}>
+            <button
+              onClick={() => setLangOpen(!langOpen)}
+              className="text-xl hover:scale-110 transition"
+            >
+              🌐
+            </button>
 
-          {/* PROFILE */}
+            {langOpen && (
+              <div className="absolute right-0 mt-3 w-44 bg-[#2a2a2f] text-white rounded-xl shadow-xl border border-gray-700 overflow-hidden">
+
+                {languages.map((lang) => {
+                  const isSelected = selectedLang === lang.code;
+
+                  return (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        setSelectedLang(lang.code);
+                        localStorage.setItem("lang", lang.code);
+                        setLangOpen(false);
+                      }}
+                      className={`w-full flex items-center justify-between px-4 py-2 transition
+                        ${
+                          isSelected
+                            ? "bg-[#6c584c]/30 text-[#e8d4a2]"
+                            : "hover:bg-gray-700"
+                        }
+                      `}
+                    >
+                      <span>{lang.label}</span>
+
+                      {isSelected && (
+                        <span className="text-green-400 font-bold">✔</span>
+                      )}
+                    </button>
+                  );
+                })}
+
+              </div>
+            )}
+          </div>
+
+          {/* 👤 PROFILE */}
           <div className="relative" ref={dropdownRef}>
             <img
               src={avatarUrl}
@@ -110,6 +172,7 @@ const DepartmentNavbar = ({ user, onLogout }) => {
               </div>
             )}
           </div>
+
         </div>
       </nav>
 

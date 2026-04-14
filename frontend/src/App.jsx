@@ -7,9 +7,8 @@ import Authentication from "./Authentication/Authenticate";
 import Dashboard from "./pages/citizens/Dashboard";
 import CreateGrievance from "./pages/citizens/CreateGrievance";
 import Complaints from "./pages/citizens/Complaints";
+import Profile from "./pages/citizens/Profile";
 
-// OPTIONAL (if still using)
-import Profile from "./User/Profile";
 
 import ManageUsers          from "./pages/admin/ManageUsers";
 import GrievanceReports     from "./pages/admin/GrievanceReports";
