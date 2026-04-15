@@ -4,6 +4,7 @@ import {
   createGrievance,
   uploadGrievanceFile,
 } from "../../api/grievance";
+
 import Navbar from "../../components/Navbar";
 
 const LANGUAGES = [
@@ -86,41 +87,49 @@ const CreateGrievance = () => {
   };
 
   const handleSubmit = async () => {
-    if (!form.originalText || !form.district || !form.pincode) {
-      setError("Fill required fields");
-      return;
+  if (!form.originalText || !form.district || !form.pincode) {
+    setError("Fill required fields");
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    let fileUrl = "";
+    let proofUrl = "";
+
+    // upload grievance file
+    if (form.file) {
+      const res = await uploadGrievanceFile(form.file);
+      fileUrl = res.data.data.url;
     }
 
-    try {
-      setLoading(true);
-
-      let fileUrl = "";
-      let proofUrl = "";
-
-      if (form.file) {
-        const res = await uploadGrievanceFile(form.file);
-        fileUrl = res?.data?.url || "";
-      }
-
-      if (form.proofImage) {
-        const res = await uploadGrievanceFile(form.proofImage);
-        proofUrl = res?.data?.url || "";
-      }
-
-      await createGrievance({
-        ...form,
-        input_url: fileUrl,
-        proof_url: proofUrl,
-      });
-
-      alert("Submitted!");
-      navigate("/dashboard");
-    } catch (err) {
-      setError(err.message || "Error");
-    } finally {
-      setLoading(false);
+    // upload proof image
+    if (form.proofImage) {
+      const res = await uploadGrievanceFile(form.proofImage);
+      proofUrl = res.data.data.url;
     }
-  };
+
+    await createGrievance({
+      inputType: form.inputType,
+      originalText: form.originalText,
+      originalLanguage: form.originalLanguage,
+      district: form.district,
+      pincode: form.pincode,
+      input_url: fileUrl,
+      proof_url: proofUrl
+    });
+
+    alert("Complaint submitted!");
+    navigate("/dashboard/complaints");
+
+  } catch (err) {
+    console.error(err);
+    setError(err?.response?.data?.message || "Submission failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-[#1f1f23] text-white">
@@ -216,11 +225,12 @@ const CreateGrievance = () => {
               Drag & Drop or
 
               <input
-                type="file"
-                hidden
-                id="fileUpload"
-                onChange={(e) => handleFile(e.target.files[0])}
-              />
+            type="file"
+            hidden
+            id="fileUpload"
+            accept="image/*,application/pdf"
+            onChange={(e) => handleFile(e.target.files[0])}
+          />
 
               <label htmlFor="fileUpload" className="underline ml-2 cursor-pointer">
                 Select File
