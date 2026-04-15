@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserGrievances } from "../../api/grievance";
+import {
+  getUserGrievances,
+  deleteGrievance
+} from "../../api/grievance";
 import Navbar from "../../components/Navbar";
 
 const Complaints = () => {
@@ -10,75 +13,53 @@ const Complaints = () => {
   const [grievances, setGrievances] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // FETCH COMPLAINTS
+  const fetchComplaints = async () => {
+    try {
+
+      const res = await getUserGrievances();
+
+      const data =
+        res?.data?.data ||
+        res?.data?.grievances ||
+        [];
+
+      setGrievances(data);
+
+    } catch (err) {
+      console.error("Error fetching complaints:", err);
+      setGrievances([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchComplaints = async () => {
-      try {
-        const res = await getUserGrievances();
-
-        let data =
-          res?.data?.data ||
-          res?.data?.grievances ||
-          [];
-
-        // ✅ DEMO DATA (NO PRIORITY)
-        if (!Array.isArray(data) || data.length === 0) {
-          data = [
-            {
-              _id: "demo1",
-              originalText: "Streetlight not working",
-              category: "Electricity",
-              district: "Delhi",
-              pincode: "110001",
-              status: "pending",
-              createdAt: new Date(),
-            },
-            {
-              _id: "demo2",
-              originalText: "Water supply issue in area",
-              category: "Water",
-              district: "Mumbai",
-              pincode: "400001",
-              status: "in_progress",
-              createdAt: new Date(),
-            },
-            {
-              _id: "demo3",
-              originalText: "Garbage not collected",
-              category: "Sanitation",
-              district: "Jaipur",
-              pincode: "302001",
-              status: "resolved",
-              createdAt: new Date(),
-            },
-          ];
-        }
-
-        setGrievances(data);
-
-      } catch (err) {
-        console.error(err);
-
-        // ✅ fallback if API fails
-        setGrievances([
-          {
-            _id: "demo1",
-            originalText: "Electricity outage",
-            category: "Electricity",
-            district: "Mumbai",
-            pincode: "400001",
-            status: "pending",
-            createdAt: new Date(),
-          },
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchComplaints();
   }, []);
 
-  // 🎨 STATUS BADGES (BETTER UI)
+  // DELETE COMPLAINT
+  const handleDelete = async (id) => {
+    try {
+
+      const confirmDelete = window.confirm(
+        "Are you sure you want to delete this complaint?"
+      );
+
+      if (!confirmDelete) return;
+
+      await deleteGrievance(id);
+
+      setGrievances((prev) =>
+        prev.filter((g) => g._id !== id)
+      );
+
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
+  };
+
+  // STATUS COLORS
   const getStatusBadge = (status) => {
     switch (status) {
       case "pending":
@@ -110,6 +91,7 @@ const Complaints = () => {
 
         {/* HEADER */}
         <div className="flex justify-between items-center mb-10">
+
           <h1 className="text-3xl font-bold text-[#e8d4a2]">
             All Complaints
           </h1>
@@ -120,22 +102,29 @@ const Complaints = () => {
           >
             + New Complaint
           </button>
+
         </div>
 
         {/* LOADING */}
         {loading ? (
           <p className="text-gray-400">Loading complaints...</p>
+        ) : grievances.length === 0 ? (
+
+          <p className="text-gray-400">
+            No complaints found.
+          </p>
+
         ) : (
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 
             {grievances.map((g) => (
+
               <div
                 key={g._id}
-                onClick={() =>
-                  navigate(`/dashboard/status?id=${g._id}`)
-                }
-                className="bg-[#2a2a2f]/80 backdrop-blur-md p-6 rounded-2xl border border-gray-700 shadow-lg cursor-pointer hover:scale-[1.03] hover:border-[#6c584c] transition-all duration-300"
+                className="bg-[#2a2a2f]/80 backdrop-blur-md p-6 rounded-2xl border border-gray-700 shadow-lg hover:border-[#6c584c] transition-all duration-300"
               >
+
                 {/* TITLE */}
                 <h2 className="text-lg font-semibold mb-2">
                   {g.originalText}
@@ -156,7 +145,7 @@ const Complaints = () => {
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(g.status)}`}
                   >
-                    {g.status.replace("_", " ")}
+                    {g.status?.replace("_", " ")}
                   </span>
                 </div>
 
@@ -164,10 +153,43 @@ const Complaints = () => {
                 <p className="text-xs text-gray-500 mt-4">
                   {new Date(g.createdAt).toLocaleString()}
                 </p>
+
+                {/* ACTION BUTTONS */}
+                <div className="flex gap-3 mt-5">
+
+                  <button
+                    onClick={() =>
+                      navigate(`/dashboard/status?id=${g._id}`)
+                    }
+                    className="text-xs px-3 py-1 bg-gray-700 rounded"
+                  >
+                    View
+                  </button>
+
+                  <button
+                    onClick={() =>
+                      navigate(`/dashboard/create?id=${g._id}`)
+                    }
+                    className="text-xs px-3 py-1 bg-blue-600 rounded"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete(g._id)}
+                    className="text-xs px-3 py-1 bg-red-600 rounded"
+                  >
+                    Delete
+                  </button>
+
+                </div>
+
               </div>
+
             ))}
 
           </div>
+
         )}
       </div>
     </div>

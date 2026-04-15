@@ -1,31 +1,45 @@
 import axiosInstance from "./axios";
 
-// ➕ CREATE GRIEVANCE
-export const createGrievance = (data) =>
-  axiosInstance.post("/grievance/create", data);
+//   CREATE GRIEVANCE
 
-// GET ALL USER GRIEVANCES
-export const getUserGrievances = () =>
-  axiosInstance.get("/grievance/all");
+export const createGrievance = async (data) => {
+  return axiosInstance.post("/grievance/create", data);
+};
 
-// GET SINGLE GRIEVANCE
-export const getGrievanceById = (id) =>
-  axiosInstance.get(`/grievance/${id}`);
+//   GET ALL USER GRIEVANCES
 
-// EDIT GRIEVANCE
-export const editGrievance = (id, data) =>
-  axiosInstance.put(`/grievance/${id}/edit`, data);
+export const getUserGrievances = async () => {
+  return axiosInstance.get("/grievance/all");
+};
 
-// DELETE GRIEVANCE
-export const deleteGrievance = (id) =>
-  axiosInstance.delete(`/grievance/${id}`);
+//   GET SINGLE GRIEVANCE
+export const getGrievanceById = async (id) => {
+  return axiosInstance.get(`/grievance/${id}`);
+};
 
-// GET STATUS
-export const getGrievanceStatus = (id) =>
-  axiosInstance.get(`/grievance/${id}/status`);
+//   EDIT GRIEVANCE
 
-// UPLOAD FILE (MULTER)
-export const uploadGrievanceFile = (file) => {
+export const editGrievance = async (id, data) => {
+  return axiosInstance.put(`/grievance/${id}/edit`, data);
+};
+
+//   DELETE GRIEVANCE
+
+export const deleteGrievance = async (id) => {
+  return axiosInstance.delete(`/grievance/${id}`);
+};
+
+
+//   GET GRIEVANCE STATUS
+
+export const getGrievanceStatus = async (id) => {
+  return axiosInstance.get(`/grievance/${id}/status`);
+};
+
+
+//   FILE UPLOAD (IMAGE / PDF)
+
+export const uploadGrievanceFile = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
 
