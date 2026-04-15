@@ -340,7 +340,7 @@ const CreateGrievance = () => {
   {/* FILE NAME */}
   {form.proofImage && (
     <p className="text-green-400 mt-3 text-sm">
-      ✅ {form.proofImage.name}
+       {form.proofImage.name}
     </p>
   )}
 </div>
