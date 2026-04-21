@@ -8,7 +8,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 // REGISTER USER — creates a new account, does not log in
 export const registerUser = asyncHandler(async (req, res) => {
-  const { username, name, email, password, role } = req.body;
+  const { username, name, email, password, role, departmentId} = req.body;
 
   console.log("📝 REGISTER REQUEST:", req.body);
 
@@ -31,15 +31,18 @@ export const registerUser = asyncHandler(async (req, res) => {
   }
 
   // ✅ ROLE CONTROL (VERY IMPORTANT)
-  const allowedRoles = ["user", "officer"]; 
+  const allowedRoles = ["user", "officer", "department"]; 
   const finalRole = allowedRoles.includes(role) ? role : "user";
-
+  if ((finalRole === "officer" || finalRole === "department") && !departmentId) {
+  throw new ApiError(400, "departmentId is required for officer");
+  }
   const user = await User.create({
     username,
     name,
     email,
     password,
     role: finalRole,
+    ...( (finalRole === "officer" || finalRole === "department") && { departmentId }),
   });
 
   console.log("✅ USER CREATED:", user.email, "| ROLE:", user.role);
@@ -128,6 +131,7 @@ export const loginUser = asyncHandler(async (req, res) => {
       email: user.email,
       username: user.username,
       role: user.role,
+      departmentId: user.departmentId || null, // ✅ add this
     },
     message: "Login successful",
   });

@@ -2,25 +2,26 @@ import axios from "axios";
 
 const API = axios.create({
   baseURL: "http://localhost:8000/api",
+  withCredentials: true,
+  headers: { "Content-Type": "application/json" },
 });
 
-// ✅ Attach token automatically
-API.interceptors.request.use((req) => {
-  const user = JSON.parse(localStorage.getItem("user"));
+// GET grievances assigned to this department
+export const getDepartmentGrievances = (departmentId) =>
+  API.get(`/department/${departmentId}/grievances`);
 
-  if (user?.token) {
-    req.headers.Authorization = `Bearer ${user.token}`;
-  }
+// GET department info
+export const getDepartmentById = (id) =>
+  API.get(`/department/${id}`);
 
-  return req;
-});
+// GET all officers in this department — for assign dropdown
+export const getOfficersByDepartment = (deptId) =>
+  API.get(`/officer/by-department/${deptId}`);
 
-// ✅ GET grievances by department
-export const getDepartmentGrievances = async (departmentId) => {
-  return API.get(`/department/${departmentId}/grievances`);
-};
+// Assign grievance to a specific officer
+export const assignToOfficer = (grievanceId, officerId) =>
+  API.put(`/admin/assign/${grievanceId}`, { officerId });
 
-// ✅ UPDATE grievance status (THIS WAS MISSING 🚨)
-export const updateStatus = async (grievanceId, status) => {
-  return API.patch(`/grievance/${grievanceId}/status`, { status });
-};
+// Update grievance status
+export const updateGrievanceStatus = (grievanceId, status) =>
+  API.put(`/admin/status/${grievanceId}`, { status });

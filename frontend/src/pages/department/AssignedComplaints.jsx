@@ -1,302 +1,305 @@
-// pages/department/AssignedComplaints.jsx
-
 import React, { useEffect, useState } from "react";
 import DepartmentNavbar from "../../components/DepartmentNavbar";
-import { getDepartmentGrievances, updateStatus } from "../../api/department";
+import {
+  getDepartmentGrievances,
+  getOfficersByDepartment,
+  assignToOfficer,
+  updateGrievanceStatus,
+} from "../../api/department";
+
+const PRIORITY_COLOR = (score) => {
+  if (score >= 76) return "text-red-400";
+  if (score >= 51) return "text-orange-400";
+  if (score >= 26) return "text-yellow-400";
+  return "text-green-400";
+};
+
+const PRIORITY_LABEL = (score) => {
+  if (score >= 76) return "Critical";
+  if (score >= 51) return "High";
+  if (score >= 26) return "Medium";
+  return "Low";
+};
+
+const STATUS_STYLE = {
+  pending:     "bg-yellow-500/20 text-yellow-400",
+  in_progress: "bg-blue-500/20 text-blue-400",
+  resolved:    "bg-green-500/20 text-green-400",
+  rejected:    "bg-red-500/20 text-red-400",
+};
 
 const AssignedComplaints = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState(null);
-  const [edited, setEdited] = useState(null); // ✅ FIX
-  const [search, setSearch] = useState("");
+  const [data, setData]           = useState([]);
+  const [officers, setOfficers]   = useState([]);
+  const [loading, setLoading]     = useState(true);
+  const [selected, setSelected]   = useState(null);
+  const [saving, setSaving]       = useState(false);
+  const [search, setSearch]       = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  // Modal state
+  const [selectedOfficerId, setSelectedOfficerId] = useState("");
+  const [selectedStatus, setSelectedStatus]       = useState("");
 
   useEffect(() => {
     fetchComplaints();
+    if (user?.departmentId) fetchOfficers();
   }, []);
 
-  // ✅ FETCH DATA
   const fetchComplaints = async () => {
     try {
       const res = await getDepartmentGrievances(user?.departmentId);
-
-      let complaints =
-        res?.data?.data ||
-        res?.data?.grievances ||
-        res?.data ||
-        [];
-
-      // ✅ FALLBACK DATA
-      if (!Array.isArray(complaints) || complaints.length === 0) {
-        complaints = [
-          {
-            _id: "dummy1",
-            originalText: "Road not repaired after rain",
-            district: "Delhi",
-            status: "pending",
-            summary: "Road damaged due to heavy rain",
-            assignedOfficer: "",
-          },
-          {
-            _id: "dummy2",
-            originalText: "Water supply disrupted",
-            district: "Mumbai",
-            status: "in_progress",
-            summary: "No water for 2 days",
-            assignedOfficer: "Water Dept",
-          },
-        ];
-      }
-
-      setData(complaints);
+      setData(res?.data?.data?.grievances || []);
     } catch (err) {
       console.error(err);
-
-      // ✅ ERROR FALLBACK
-      setData([
-        {
-          _id: "dummy1",
-          originalText: "Electricity issue",
-          district: "Mumbai",
-          status: "pending",
-          summary: "Frequent power cuts",
-          assignedOfficer: "",
-        },
-        {
-          _id: "dummy2",
-          originalText: "Water supply disrupted",
-          district: "Mumbai",
-          status: "pending",
-          summary: "No water for 2 days",
-          assignedOfficer: "",
-        },
-      ]);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ SAVE CHANGES
-  const handleSave = () => {
-    setData((prev) =>
-      prev.map((item) =>
-        item._id === edited._id ? edited : item
-      )
-    );
-
-    setSelected(null);
-    setEdited(null);
-  };
-
-  // 🎨 STATUS COLOR
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-500/20 text-yellow-400";
-      case "in_progress":
-        return "bg-blue-500/20 text-blue-400";
-      case "resolved":
-        return "bg-green-500/20 text-green-400";
-      default:
-        return "bg-gray-500/20 text-gray-400";
+  const fetchOfficers = async () => {
+    try {
+      const res = await getOfficersByDepartment(user.departmentId);
+      setOfficers(res?.data?.data || []);
+    } catch (err) {
+      console.error("Officers fetch failed:", err);
     }
   };
 
-  // 🎯 PRIORITY
-  const getPriority = (text) => {
-    if (text.toLowerCase().includes("water")) return "high";
-    if (text.toLowerCase().includes("road")) return "medium";
-    return "low";
+  const openModal = (g) => {
+    setSelected(g);
+    setSelectedOfficerId(g.assignedOfficerId?._id || "");
+    setSelectedStatus(g.status);
   };
 
-  const getPriorityColor = (p) => {
-    switch (p) {
-      case "high":
-        return "text-red-400";
-      case "medium":
-        return "text-yellow-400";
-      case "low":
-        return "text-green-400";
-      default:
-        return "text-gray-400";
+  const handleSave = async () => {
+    if (!selected) return;
+    setSaving(true);
+    try {
+      // Assign officer if changed
+      if (selectedOfficerId && selectedOfficerId !== (selected.assignedOfficerId?._id || "")) {
+        await assignToOfficer(selected._id, selectedOfficerId);
+      }
+
+      // Update status if changed
+      if (selectedStatus !== selected.status) {
+        await updateGrievanceStatus(selected._id, selectedStatus);
+      }
+
+      await fetchComplaints();
+      setSelected(null);
+    } catch (err) {
+      console.error("Save failed:", err);
+    } finally {
+      setSaving(false);
     }
   };
 
-  // 🔍 SEARCH
-  const filteredData = data.filter((g) =>
-    g.originalText.toLowerCase().includes(search.toLowerCase()) ||
-    g.district.toLowerCase().includes(search.toLowerCase()) ||
-    g._id.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = data.filter((g) => {
+    const text = (g.translatedText || g.originalText || "").toLowerCase();
+    const matchSearch =
+      text.includes(search.toLowerCase()) ||
+      (g.district || "").toLowerCase().includes(search.toLowerCase()) ||
+      g._id.toLowerCase().includes(search.toLowerCase());
+    const matchStatus = statusFilter === "all" || g.status === statusFilter;
+    return matchSearch && matchStatus;
+  });
 
   return (
     <div className="min-h-screen bg-[#1f1f23] text-white">
-
       <DepartmentNavbar
         user={user}
-        onLogout={() => {
-          localStorage.removeItem("user");
-          window.location.href = "/login";
-        }}
+        onLogout={() => { localStorage.removeItem("user"); window.location.href = "/login"; }}
       />
 
-      <div className="pt-24 px-6 md:px-10">
+      <div className="pt-24 px-6 md:px-10 max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-[#e8d4a2]">Assigned Complaints</h1>
 
-        <h1 className="text-3xl font-bold mb-6 text-[#e8d4a2]">
-          Assigned Complaints
-        </h1>
+        {/* FILTERS */}
+        <div className="flex flex-col md:flex-row gap-4 mb-4">
+          <input
+            placeholder="Search by complaint, ID, or district..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 bg-[#2a2a2f] border border-gray-700 p-3 rounded-lg text-sm"
+          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="bg-[#2a2a2f] border border-gray-700 px-4 py-3 rounded-lg text-sm"
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="resolved">Resolved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
 
-        {/* SEARCH */}
-        <input
-          placeholder="Search by title, ID, or district..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full mb-4 bg-[#2a2a2f] border border-gray-700 p-3 rounded-lg"
-        />
+        <p className="text-xs text-gray-500 mb-4">
+          Showing {filtered.length} of {data.length} complaints
+        </p>
 
-        {/* TABLE */}
         {loading ? (
           <p className="text-gray-400">Loading...</p>
         ) : (
-          <div className="bg-[#2a2a2f] rounded-xl border border-gray-700 overflow-hidden">
-
+          <div className="bg-[#2a2a2f] rounded-xl border border-gray-700 overflow-x-auto">
             <table className="w-full text-sm">
-
               <thead className="bg-[#1f1f23] text-gray-400">
                 <tr>
-                  <th className="p-3 text-left">ID</th>
-                  <th className="p-3 text-left">Title</th>
+                  <th className="p-3 text-left">#</th>
+                  <th className="p-3 text-left">Complaint (English)</th>
                   <th className="p-3 text-left">District</th>
+                  <th className="p-3 text-left">Category</th>
                   <th className="p-3 text-left">Priority</th>
                   <th className="p-3 text-left">Status</th>
-                  <th className="p-3 text-left">Assigned To</th>
+                  <th className="p-3 text-left">Assigned Officer</th>
+                  <th className="p-3 text-left">Citizen</th>
                   <th className="p-3 text-left">Action</th>
                 </tr>
               </thead>
-
               <tbody>
-                {filteredData.map((g, i) => {
-                  const priority = getPriority(g.originalText);
+                {filtered.map((g, i) => (
+                  <tr key={g._id} className="border-t border-gray-700 hover:bg-[#1f1f23] transition">
+                    <td className="p-3 text-gray-500">{i + 1}</td>
 
-                  return (
-                    <tr key={g._id} className="border-t border-gray-700 hover:bg-[#1f1f23]">
+                    <td className="p-3 font-medium max-w-xs">
+                      <span title={g.translatedText || g.originalText}>
+                        {(g.summaryText || g.translatedText || g.originalText || "").slice(0, 60)}…
+                      </span>
+                    </td>
 
-                      <td className="p-3">GRV-{i + 1}</td>
+                    <td className="p-3 text-gray-400 capitalize">{g.district}</td>
+                    <td className="p-3 text-gray-400 capitalize">{g.category || "—"}</td>
 
-                      <td className="p-3 font-semibold">{g.originalText}</td>
+                    <td className={`p-3 font-semibold ${PRIORITY_COLOR(g.priorityScore)}`}>
+                      ● {PRIORITY_LABEL(g.priorityScore)} ({g.priorityScore})
+                    </td>
 
-                      <td className="p-3">{g.district}</td>
+                    <td className="p-3">
+                      <span className={`px-3 py-1 rounded-full text-xs ${STATUS_STYLE[g.status] || STATUS_STYLE.pending}`}>
+                        {g.status?.replace("_", " ")}
+                      </span>
+                    </td>
 
-                      <td className={`p-3 ${getPriorityColor(priority)}`}>
-                        ● {priority}
-                      </td>
+                    <td className="p-3 text-gray-400">
+                      {g.assignedOfficerId?.name || <span className="text-gray-600 italic">unassigned</span>}
+                    </td>
 
-                      <td className="p-3">
-                        <span className={`px-3 py-1 rounded-full text-xs ${getStatusColor(g.status)}`}>
-                          {g.status}
-                        </span>
-                      </td>
+                    <td className="p-3 text-gray-400">{g.userId?.name || "—"}</td>
 
-                      <td className="p-3">
-                        {g.assignedOfficer || "unassigned"}
-                      </td>
+                    <td className="p-3">
+                      <button
+                        onClick={() => openModal(g)}
+                        className="bg-[#6c584c] px-3 py-1 rounded-md text-xs hover:opacity-90"
+                      >
+                        Manage
+                      </button>
+                    </td>
+                  </tr>
+                ))}
 
-                      <td className="p-3">
-                        <button
-                          onClick={() => {
-                            setSelected(g);
-                            setEdited({ ...g }); // ✅ clone
-                          }}
-                          className="bg-[#6c584c] px-3 py-1 rounded-md"
-                        >
-                          Manage
-                        </button>
-                      </td>
-
-                    </tr>
-                  );
-                })}
+                {filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={9} className="p-6 text-center text-gray-500">
+                      No complaints found.
+                    </td>
+                  </tr>
+                )}
               </tbody>
-
             </table>
           </div>
         )}
       </div>
 
-      {/* MODAL */}
-      {selected && edited && (
-        <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50">
+      {/* MANAGE MODAL */}
+      {selected && (
+        <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50 p-4">
+          <div className="bg-[#2a2a2f] p-8 rounded-xl w-full max-w-lg border border-gray-700">
 
-          <div className="bg-[#2a2a2f] p-8 rounded-xl w-[500px]">
+            <h2 className="text-xl font-bold mb-1 text-[#e8d4a2]">Manage Complaint</h2>
+            <p className="text-xs text-gray-500 mb-4">ID: {selected._id}</p>
 
-            <h2 className="text-xl font-bold mb-4">
-              {edited.originalText}
-            </h2>
-
-            <p>📍 {edited.district}</p>
-            <p className="mt-2">{edited.summary}</p>
-
-            {/* OFFICER */}
-            <input
-              placeholder="Assign officer"
-              value={edited.assignedOfficer || ""}
-              onChange={(e) =>
-                setEdited({
-                  ...edited,
-                  assignedOfficer: e.target.value,
-                })
-              }
-              className="mt-4 w-full bg-[#1f1f23] p-2 rounded"
-            />
-
-            {/* STATUS */}
-            <div className="flex gap-2 mt-4">
-              {["pending", "in_progress", "resolved"].map((s) => (
-                <button
-                  key={s}
-                  onClick={() =>
-                    setEdited({
-                      ...edited,
-                      status: s,
-                    })
-                  }
-                  className={`px-3 py-1 border rounded ${
-                    edited.status === s ? "bg-[#6c584c]" : ""
-                  }`}
-                >
-                  {s}
-                </button>
-              ))}
+            {/* COMPLAINT SUMMARY */}
+            <div className="bg-[#1f1f23] rounded-lg p-4 mb-5 text-sm space-y-2">
+              <p className="text-gray-300">
+                {selected.summaryText || selected.translatedText?.slice(0, 200) || selected.originalText}
+              </p>
+              <p className="text-gray-500">
+                📍 {selected.district} · {selected.category}
+              </p>
+              <p className={`font-semibold ${PRIORITY_COLOR(selected.priorityScore)}`}>
+                Priority: {PRIORITY_LABEL(selected.priorityScore)} ({selected.priorityScore})
+              </p>
+              <p className="text-gray-500">
+                Citizen: {selected.userId?.name || "—"} · {selected.userId?.email || ""}
+              </p>
             </div>
 
-            {/* ACTION BUTTONS */}
-            <div className="flex gap-4 mt-6">
+            {/* ASSIGN OFFICER */}
+            <div className="mb-4">
+              <label className="text-xs text-gray-400 block mb-1">Assign to Officer</label>
+              <select
+                value={selectedOfficerId}
+                onChange={(e) => setSelectedOfficerId(e.target.value)}
+                className="w-full bg-[#1f1f23] border border-gray-600 p-2 rounded-lg text-sm"
+              >
+                <option value="">— Unassigned —</option>
+                {officers.map((o) => (
+                  <option key={o._id} value={o._id}>
+                    {o.name} ({o.username})
+                  </option>
+                ))}
+              </select>
+              {officers.length === 0 && (
+                <p className="text-xs text-yellow-500 mt-1">
+                  No officers found for this department.
+                </p>
+              )}
+            </div>
 
+            {/* UPDATE STATUS */}
+            <div className="mb-6">
+              <label className="text-xs text-gray-400 block mb-2">Update Status</label>
+              <div className="flex gap-2 flex-wrap">
+                {["pending", "in_progress", "resolved", "rejected"].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setSelectedStatus(s)}
+                    className={`px-3 py-1 rounded-lg text-xs border transition ${
+                      selectedStatus === s
+                        ? "bg-[#6c584c] border-[#6c584c] text-white"
+                        : "border-gray-600 text-gray-400 hover:border-gray-400"
+                    }`}
+                  >
+                    {s.replace("_", " ")}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* ACTIONS */}
+            <div className="flex gap-3">
               <button
-                onClick={() => {
-                  setSelected(null);
-                  setEdited(null);
-                }}
-                className="w-1/2 bg-gray-600 py-2 rounded"
+                onClick={() => setSelected(null)}
+                className="flex-1 bg-gray-700 py-2 rounded-lg text-sm hover:bg-gray-600"
               >
                 Cancel
               </button>
-
               <button
                 onClick={handleSave}
-                className="w-1/2 bg-[#6c584c] py-2 rounded"
+                disabled={saving}
+                className="flex-1 bg-[#6c584c] py-2 rounded-lg text-sm hover:opacity-90 disabled:opacity-50"
               >
-                Save
+                {saving ? "Saving..." : "Save Changes"}
               </button>
-
             </div>
 
           </div>
         </div>
       )}
-
     </div>
   );
 };

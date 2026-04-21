@@ -1,5 +1,6 @@
 import { Department } from "../models/department.model.js";
 import { Grievance } from "../models/grievance.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -37,4 +38,18 @@ export const getDepartmentGrievances = asyncHandler(async (req, res) => {
   const total = await Grievance.countDocuments(filter);
 
   return res.status(200).json(new ApiResponse(200, { grievances, total, page: Number(page) }));
+});
+
+export const getOfficersByDepartment = asyncHandler(async (req, res) => {
+  const { departmentId } = req.params;
+
+  const officers = await User.find({
+    role: "officer",
+    departmentId,
+  }).select("name email");
+
+  return res.status(200).json({
+    success: true,
+    officers,
+  });
 });

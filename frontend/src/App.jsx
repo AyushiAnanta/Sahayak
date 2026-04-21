@@ -85,17 +85,17 @@ function AppRoutes() {
 
       {/* DEPARTMENT — protected */}
       <Route path="/department" element={
-        <ProtectedRoute allowedRoles={["officer"]}>
+        <ProtectedRoute allowedRoles={["department"]}>
           <DepartmentDashboard />
         </ProtectedRoute>
       } />
       <Route path="/department/complaints" element={
-        <ProtectedRoute allowedRoles={["officer"]}>
+        <ProtectedRoute allowedRoles={["department"]}>
           <AssignedComplaints />
         </ProtectedRoute>
       } />
       <Route path="/department/profile" element={
-        <ProtectedRoute allowedRoles={["officer"]}>
+        <ProtectedRoute allowedRoles={["department"]}>
           <DepartmentProfile />
         </ProtectedRoute>
       } />

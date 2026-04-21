@@ -46,7 +46,7 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
 
       const response = await loginUser(payload);
 
-      console.log("🔥 FULL RESPONSE:", response);
+      console.log("FULL RESPONSE:", response);
 
       // ── Extract user and token from response ──────────────────────────────
       // Adjust these keys to match exactly what your backend returns
@@ -55,7 +55,7 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
                        || response?.data?.accessToken  // fallback
                        || response?.data?.data?.token; // nested fallback
 
-      console.log("🔥 USER:", userData, "| TOKEN:", accessToken);
+      console.log("USER:", userData, "| TOKEN:", accessToken);
 
       if (!userData) throw new Error("User data missing from backend response");
 
@@ -63,8 +63,10 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
       login(userData);
 
       // ── Redirect by role ──────────────────────────────────────────────────
-      if (userData?.role === "officer") {
+      if (userData?.role === "department") {
         window.location.href = "/department";
+      } else if (userData?.role === "officer") {
+        window.location.href = "/officer";
       } else if (userData?.role === "admin") {
         window.location.href = "/admin";
       } else {

@@ -1,6 +1,7 @@
 import { Grievance } from "../models/grievance.model.js";
 import { Notification } from "../models/notification.model.js";
 import { StatusLog } from "../models/statusLog.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -167,4 +168,18 @@ export const getAdminNotifications = asyncHandler(async (req, res) => {
     .populate("grievanceId", "status district category");
 
   return res.status(200).json(new ApiResponse(200, notifications));
+});
+
+// GET /api/admin/stats/users — returns total users and officers count
+export const getUserStats = asyncHandler(async (req, res) => {
+  const [totalUsers, totalOfficers] = await Promise.all([
+    User.countDocuments({ role: "user", }),
+    User.countDocuments({ role: "officer" }),
+  ]);
+
+  return res.status(200).json(new ApiResponse(200, {
+    totalUsers,
+    totalOfficers,
+    total: totalUsers + totalOfficers,
+  }));
 });

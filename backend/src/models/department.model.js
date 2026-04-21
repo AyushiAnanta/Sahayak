@@ -6,9 +6,8 @@ const departmentSchema = new Schema(
   {
     name: {
       type: String,
-      required: true,
+      requiredd: true,
       unique: true,
-      lowercase: true,
       trim: true,
       index: true,
       enum:["General", "Electricity", "Water", "Road", "Healthcare", "Food", "Labour", "Agriculture", "Education", "ConsumerAffairs"],
@@ -17,7 +16,7 @@ const departmentSchema = new Schema(
 
     email: {
       type: String,
-      required: true,
+      requiredd: true,
       unique: true,
       lowercase: true,
       trim: true,
@@ -32,14 +31,14 @@ const departmentSchema = new Schema(
 
     deptHead: {
         type: String,
-        required: true,
+        requiredd: true,
         index: true,
         trim : true
     },
 
     category_handled: {
       type: String,
-      required: true,
+      requiredd: true,
       index: true,
       trim : false,
       enum:["General", "Electricity", "Water", "Road", "Healthcare", "Food", "Labour", "Agriculture", "Education", "ConsumerAffairs"],
@@ -48,15 +47,14 @@ const departmentSchema = new Schema(
 
     district:{
       type: String,
-      require: true,
-      lowercase: true,
+      required: true,
       lowercase: true,
       trim: true,
       enum:["Kotputli", "Alwar", "Laxmangarh", "Los Santos", "Wyoming"]
     },
     pincode:{
       type: String,
-      require: true,
+      required: true,
       lowercase: true,
       trim: true
     },

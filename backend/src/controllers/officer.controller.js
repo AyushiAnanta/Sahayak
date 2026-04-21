@@ -1,6 +1,7 @@
 import { Grievance } from "../models/grievance.model.js";
 import { Notification } from "../models/notification.model.js";
 import { StatusLog } from "../models/statusLog.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -100,3 +101,13 @@ export const completeTask = asyncHandler(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, grievance, "Task marked as resolved"));
 });
+
+export const getOfficersByDepartment = asyncHandler(async (req, res) => {
+  const officers = await User.find({
+    departmentId: req.params.deptId,
+    role: "officer",
+  }).select("name username email");
+ 
+  return res.status(200).json(new ApiResponse(200, officers));
+});
+ 

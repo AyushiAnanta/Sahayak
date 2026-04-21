@@ -63,9 +63,16 @@ const userSchema = new Schema(
 
     role: {
       type: String,
-      enum: ["user", "officer", "admin"],
+      enum: ["user", "officer", "admin", "department"],
       default: "user",
     },
+    departmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department",
+      required: function () {
+        return this.role === "officer" || this.role === "department";
+      },
+    }
   },
   { timestamps: true }
 );
