@@ -24,6 +24,7 @@ import {
 // Frontend uses this to pre-fill the grievance form before user submits
 // ─────────────────────────────────────────────────────────────────────────────
 export const uploadGrievanceFile = asyncHandler(async (req, res) => {
+  console.log("hereeeeeeeee")
   const localPath = req.file?.path;
   if (!localPath) throw new ApiError(400, "No file provided");
 

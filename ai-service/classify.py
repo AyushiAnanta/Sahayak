@@ -54,7 +54,7 @@ Respond with ONLY a raw JSON object. No explanation. No markdown. No code blocks
   "confidence": <float 0.0 to 1.0>,
   "keywords": ["<3-5 key words from complaint>"],
   "priority_score": <integer 1-100>,
-  "summary": "<1-2 clear official sentences>"
+  "summary": "<MAXIMUM 2 sentences, under 50 words, official tone, no repetition of full complaint>"
 }}"""
 
     try:
@@ -123,7 +123,7 @@ def summarize_text(text: str) -> str:
             messages=[
                 {
                     "role": "system",
-                    "content": "Summarize citizen grievances in 1-2 clear official sentences. Facts only, no opinions, no solutions."
+                    "content": "Summarize in exactly 1 sentence under 30 words. Be concise. Output only the summary."
                 },
                 {
                     "role": "user",

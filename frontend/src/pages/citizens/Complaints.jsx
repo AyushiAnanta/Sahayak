@@ -16,9 +16,9 @@ const Complaints = () => {
         const res = await getUserGrievances();
 
         let data =
-          res?.data?.data ||
+        res?.data?.data?.grievances ||   // ✅ correct path
           res?.data?.grievances ||
-          [];
+        [];
 
         // ✅ DEMO DATA (NO PRIORITY)
         if (!Array.isArray(data) || data.length === 0) {

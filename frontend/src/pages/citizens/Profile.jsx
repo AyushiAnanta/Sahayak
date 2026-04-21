@@ -14,7 +14,6 @@ const Profile = () => {
   const handleSave = () => {
     localStorage.setItem("user", JSON.stringify(user));
     setEditMode(false);
-    alert("Profile updated!");
   };
 
   if (!user) {

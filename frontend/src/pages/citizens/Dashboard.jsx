@@ -17,11 +17,7 @@ const Dashboard = () => {
       try {
         const res = await getUserGrievances();
 
-        const data =
-          res.data?.data ||
-          res.data?.grievances ||
-          res.data?.data?.grievances ||
-          [];
+        const data =res.data?.data?.grievances || [];
 
         setGrievances(Array.isArray(data) ? data : []);
       } catch (err) {

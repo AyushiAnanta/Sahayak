@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ FIX
 import AuthInput from "./AuthInput";
 import GoogleAuthButton from "./GoogleAuthButton";
 import { loginUser } from "../api/auth";
+import { useAuth } from "../context/AuthContext";
 
 import hi from "../translations/hi.json";
 import mr from "../translations/mr.json";
@@ -14,13 +14,9 @@ import en from "../translations/en.json";
 const TEXTS = { en, hi, mr, ur, pa, bn };
 
 const LoginForm = ({ switchToSignup, lang = "en" }) => {
-  const navigate = useNavigate(); // ✅ FIX
+  const { login } = useAuth();
 
-  const [form, setForm] = useState({
-    identifier: "",
-    password: "",
-  });
-
+  const [form, setForm] = useState({ identifier: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -32,55 +28,56 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
   };
 
   const handleLogin = async () => {
-  const { identifier, password } = form;
+    const { identifier, password } = form;
 
-  if (!identifier || !password) {
-    setError(t.errorFill || "Enter email/username and password");
-    return;
-  }
-
-  try {
-    setLoading(true);
-    setError("");
-
-    const isEmail = identifier.includes("@");
-
-    const payload = isEmail
-      ? { email: identifier, password }
-      : { username: identifier, password };
-
-    const response = await loginUser(payload);
-
-    console.log("🔥 FULL RESPONSE:", response);
-
-    // ✅ SAFE EXTRACTION
-    const userData = response?.data?.user;
-
-    console.log("🔥 EXTRACTED USER:", userData);
-
-    // ❌ STOP if undefined
-    if (!userData) {
-      throw new Error("User data missing from backend response");
+    if (!identifier || !password) {
+      setError(t.errorFill || "Enter email/username and password");
+      return;
     }
 
-    localStorage.setItem("user", JSON.stringify(userData));
+    try {
+      setLoading(true);
+      setError("");
 
-    // ✅ SAFE ROLE CHECK
-    if (userData?.role === "officer") {
-      window.location.href = "/department";
-    } else if (userData?.role === "admin") {
-      window.location.href = "/admin";
-    } else {
-      window.location.href = "/dashboard";
+      const isEmail = identifier.includes("@");
+      const payload = isEmail
+        ? { email: identifier, password }
+        : { username: identifier, password };
+
+      const response = await loginUser(payload);
+
+      console.log("🔥 FULL RESPONSE:", response);
+
+      // ── Extract user and token from response ──────────────────────────────
+      // Adjust these keys to match exactly what your backend returns
+      const userData    = response?.data?.user;
+      const accessToken = response?.data?.token        // try this first
+                       || response?.data?.accessToken  // fallback
+                       || response?.data?.data?.token; // nested fallback
+
+      console.log("🔥 USER:", userData, "| TOKEN:", accessToken);
+
+      if (!userData) throw new Error("User data missing from backend response");
+
+      // ── Save both via AuthContext (sets localStorage + state) ─────────────
+      login(userData);
+
+      // ── Redirect by role ──────────────────────────────────────────────────
+      if (userData?.role === "officer") {
+        window.location.href = "/department";
+      } else if (userData?.role === "admin") {
+        window.location.href = "/admin";
+      } else {
+        window.location.href = "/dashboard";
+      }
+
+    } catch (err) {
+      console.error("❌ LOGIN ERROR:", err);
+      setError(err.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
-
-  } catch (err) {
-    console.error("❌ LOGIN ERROR:", err);
-    setError(err.message || "Login failed");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <div
@@ -99,7 +96,6 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
       </p>
 
       <div className="flex flex-col gap-4 mt-6">
-
         <AuthInput
           name="identifier"
           type="text"
@@ -107,7 +103,6 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
           value={form.identifier}
           onChange={handleChange}
         />
-
         <AuthInput
           name="password"
           type="password"

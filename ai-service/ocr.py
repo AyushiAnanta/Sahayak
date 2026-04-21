@@ -1,25 +1,59 @@
-import pytesseract
-from PIL import Image
+import io
+import base64
+import os
 import pdfplumber
+from groq import Groq
 
-def extract_text(file_path: str, file_type: str) -> str:
-    if file_type in ["jpg", "jpeg", "png"]:
-        image = Image.open(file_path).convert("L")
-        return pytesseract.image_to_string(image, lang="eng+hin")
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
+def image_to_base64(image_bytes: bytes) -> str:
+    return base64.b64encode(image_bytes).decode("utf-8")
+
+def extract_text_from_bytes(file_bytes: bytes) -> str:
+    b64 = image_to_base64(file_bytes)
+    
+    response = client.chat.completions.create(
+        model="meta-llama/llama-4-scout-17b-16e-instruct",  # Groq's vision model
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/png;base64,{b64}"
+                        }
+                    },
+                    {
+                        "type": "text",
+                        "text": "Extract all text from this image exactly as written. Preserve the original language (Hindi, English, or mixed). Output only the extracted text, nothing else."
+                    }
+                ]
+            }
+        ],
+        max_tokens=1024,
+    )
+    
+    return response.choices[0].message.content.strip()
+
+
+def extract_text(file_bytes: bytes, file_type: str) -> str:
+    if file_type in ["jpg", "jpeg", "png", "webp"]:
+        return extract_text_from_bytes(file_bytes)
 
     elif file_type == "pdf":
         text = ""
-
-        with pdfplumber.open(file_path) as pdf:
+        with pdfplumber.open(io.BytesIO(file_bytes)) as pdf:
             for page in pdf.pages:
+                # Try native text first (free, instant)
                 page_text = page.extract_text()
-
-                if page_text:
+                if page_text and page_text.strip():
                     text += page_text
                 else:
-                    image = page.to_image().original.convert("L")
-                    text += pytesseract.image_to_string(image, lang="eng+hin")
-
+                    # Fall back to Groq vision for scanned pages
+                    buf = io.BytesIO()
+                    page.to_image(resolution=200).original.save(buf, format="PNG")
+                    text += extract_text_from_bytes(buf.getvalue())
         return text.strip()
 
     return ""

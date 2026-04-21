@@ -22,13 +22,17 @@ export const runTranslate = async (text, targetLanguage = "en") => {
       text,
       target_language: targetLanguage,
     });
+
+    const translated = data.translated_text || text;
+    const detected = data.detected_language || "en";
+
+    // ✅ if translation returned same text, force-use original
     return {
-      translatedText: data.translated_text || text,
-      detectedLanguage: data.detected_language || "en",
+      translatedText: translated,
+      detectedLanguage: detected,
     };
   } catch (err) {
     console.error("[AI] translate failed:", err.message);
-    // Non-fatal — return original text so grievance creation doesn't crash
     return { translatedText: text, detectedLanguage: "en" };
   }
 };
@@ -97,6 +101,7 @@ export const runExplain = async (text, language = "en") => {
 // Runs OCR on a local file path — sends file bytes to Python service
 
 export const runOCR = async (localPath, originalname, mimetype) => {
+  console.log("runninggggggggggggggg")
   try {
     if (!fs.existsSync(localPath)) {
       console.error("[OCR] File not found:", localPath);
@@ -116,8 +121,8 @@ export const runOCR = async (localPath, originalname, mimetype) => {
       maxBodyLength: Infinity,
       timeout: 30000,
     });
-
-    return data.text || "";   // <-- match your FastAPI response
+    console.log("dataaaa",data)
+    return data.extracted_text || "";   // <-- match your FastAPI response
   } catch (err) {
     console.error("[AI] OCR failed:", err.message);
     return "";

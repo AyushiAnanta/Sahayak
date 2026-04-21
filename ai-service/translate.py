@@ -19,28 +19,27 @@ LANGUAGE_NAMES = {
 
 
 def detect_and_translate(text: str, target_language: str = "en") -> dict:
-    # Detects source language — if already target language, skip translation entirely
     try:
         detected = detect(text)
     except Exception:
         detected = "en"
 
-    if detected == target_language:
-        return {
-            "translated_text": text,
-            "detected_language": detected,
-        }
+    # ✅ Don't skip — always attempt translation if text isn't ASCII
+    # langdetect wrongly returns "en" for short Hindi/regional text
+    is_likely_non_english = not all(ord(c) < 128 for c in text.replace(" ", ""))
+    
+    if detected == target_language and not is_likely_non_english:
+        return {"translated_text": text, "detected_language": detected}
 
     target_name = LANGUAGE_NAMES.get(target_language, "english")
 
     try:
-        # GoogleTranslator is free — uses Google Translate, no API key needed
         translated = GoogleTranslator(source="auto", target=target_name).translate(text)
+        # If translation returned same text, detected was wrong
+        if translated.strip() == text.strip():
+            detected = target_language
     except Exception as e:
         print(f"Translation error: {e}")
-        translated = text  # return original if translation fails
+        translated = text
 
-    return {
-        "translated_text": translated,
-        "detected_language": detected,
-    }
+    return {"translated_text": translated, "detected_language": detected}

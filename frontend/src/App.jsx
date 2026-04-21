@@ -1,4 +1,5 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 // AUTH
 import Authentication from "./Authentication/Authenticate";
@@ -12,40 +13,103 @@ import Profile from "./pages/citizens/Profile";
 // ADMIN PAGES
 import AdminDashboard from "./pages/admin/Dashboard";
 import GrievanceReports from "./pages/admin/GrievanceReports";
-import AdminNotifications from "./pages/admin/AdminNotifications"; // ✅ new
+import AdminNotifications from "./pages/admin/AdminNotifications";
 
 // DEPARTMENT PAGES
 import DepartmentDashboard from "./pages/department/Dashboard";
 import AssignedComplaints from "./pages/department/AssignedComplaints";
 import DepartmentProfile from "./pages/department/DepartmentProfile";
 
+// ── Protected Route — redirects to /login if not authenticated ────────────────
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { user, loading } = useAuth();
+
+  if (loading) return null; // or a spinner
+
+  if (!user) return <Navigate to="/login" replace />;
+
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
+
+function AppRoutes() {
+  return (
+    <Routes>
+
+      {/* AUTH — public */}
+      <Route path="/"        element={<Authentication />} />
+      <Route path="/login"   element={<Authentication />} />
+      <Route path="/signup"  element={<Authentication />} />
+
+      {/* CITIZEN — protected */}
+      <Route path="/dashboard" element={
+        <ProtectedRoute allowedRoles={["citizen", "user"]}>
+          <Dashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard/create" element={
+        <ProtectedRoute allowedRoles={["citizen", "user"]}>
+          <CreateGrievance />
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard/complaints" element={
+        <ProtectedRoute allowedRoles={["citizen", "user"]}>
+          <Complaints />
+        </ProtectedRoute>
+      } />
+      <Route path="/dashboard/profile" element={
+        <ProtectedRoute allowedRoles={["citizen", "user"]}>
+          <Profile />
+        </ProtectedRoute>
+      } />
+
+      {/* ADMIN — protected */}
+      <Route path="/admin" element={
+        <ProtectedRoute allowedRoles={["admin"]}>
+          <AdminDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/grievances" element={
+        <ProtectedRoute allowedRoles={["admin"]}>
+          <GrievanceReports />
+        </ProtectedRoute>
+      } />
+      <Route path="/admin/notifications" element={
+        <ProtectedRoute allowedRoles={["admin"]}>
+          <AdminNotifications />
+        </ProtectedRoute>
+      } />
+
+      {/* DEPARTMENT — protected */}
+      <Route path="/department" element={
+        <ProtectedRoute allowedRoles={["officer"]}>
+          <DepartmentDashboard />
+        </ProtectedRoute>
+      } />
+      <Route path="/department/complaints" element={
+        <ProtectedRoute allowedRoles={["officer"]}>
+          <AssignedComplaints />
+        </ProtectedRoute>
+      } />
+      <Route path="/department/profile" element={
+        <ProtectedRoute allowedRoles={["officer"]}>
+          <DepartmentProfile />
+        </ProtectedRoute>
+      } />
+
+    </Routes>
+  );
+}
+
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-
-        {/* AUTH */}
-        <Route path="/" element={<Authentication />} />
-        <Route path="/login" element={<Authentication />} />
-        <Route path="/signup" element={<Authentication />} />
-
-        {/* CITIZEN */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/dashboard/create" element={<CreateGrievance />} />
-        <Route path="/dashboard/complaints" element={<Complaints />} />
-        <Route path="/dashboard/profile" element={<Profile />} />
-
-        {/* ADMIN */}
-        <Route path="/admin" element={<AdminDashboard />} />
-        <Route path="/admin/grievances" element={<GrievanceReports />} />
-        <Route path="/admin/notifications" element={<AdminNotifications />} />
-
-        {/* DEPARTMENT */}
-        <Route path="/department" element={<DepartmentDashboard />} />
-        <Route path="/department/complaints" element={<AssignedComplaints />} />
-        <Route path="/department/profile" element={<DepartmentProfile />} />
-
-      </Routes>
+      <AuthProvider>
+        <AppRoutes />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
