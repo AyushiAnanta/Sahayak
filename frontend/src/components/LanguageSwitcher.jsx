@@ -1,20 +1,22 @@
 import React, { useState } from "react";
 import { FaGlobe } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 const LANGUAGES = {
   en: "English",
   hi: "हिन्दी",
   mr: "मराठी",
-  bn: "বাংলা",  
-  ur: "اردو",
+  bn: "বাংলা",
   pa: "ਪੰਜਾਬੀ",
 };
 
-export default function LanguageSwitcher({ lang, setLang }) {
+export default function LanguageSwitcher() {
   const [open, setOpen] = useState(false);
+  const { i18n } = useTranslation();
 
   const changeLang = (code) => {
-    setLang(code);  
+    i18n.changeLanguage(code);          // ✅ change globally
+    localStorage.setItem("lang", code); // ✅ persist
     setOpen(false);
   };
 
@@ -33,7 +35,7 @@ export default function LanguageSwitcher({ lang, setLang }) {
               key={code}
               onClick={() => changeLang(code)}
               className={`px-2 py-1 cursor-pointer rounded hover:bg-gray-100 ${
-                lang === code ? "font-semibold" : ""
+                i18n.language === code ? "font-semibold" : ""
               }`}
             >
               {name}

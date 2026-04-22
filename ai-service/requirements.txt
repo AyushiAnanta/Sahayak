@@ -12,3 +12,4 @@ Pillow
 pdfplumber
 pdf2image
 python-multipart
+pydantic
