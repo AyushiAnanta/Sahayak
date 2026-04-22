@@ -5,72 +5,55 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ── Rehydrate from localStorage on app load ────────────────────────────────
+  // ✅ REHYDRATE USER FROM BACKEND (COOKIE BASED)
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("token");
+    const fetchUser = async () => {
+      try {
+        const res = await axiosInstance.get("/auth/me");
 
-    if (storedUser && storedToken && storedToken !== "undefined") {
-      const parsedUser = JSON.parse(storedUser);
+        // ✅ VERY IMPORTANT FIX
+        setUser(res.data.data);   // <-- this was your bug
 
-      setUser(parsedUser);
-      setToken(storedToken);
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-      // ✅ Attach token globally
-      axiosInstance.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${storedToken}`;
-    }
-
-    setLoading(false);
+    fetchUser();
   }, []);
 
-  // ── LOGIN ─────────────────────────────────────────────────────────────────
-  const login = (userData, accessToken) => {
-    if (!accessToken) {
-      console.error("❌ Token missing in login()");
-      return;
-    }
-
-    // ✅ Save in state
+  // ✅ LOGIN (NO TOKEN)
+  const login = (userData) => {
     setUser(userData);
-    setToken(accessToken);
-
-    // ✅ Save in localStorage
-    localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("token", accessToken);
-
-    // ✅ Attach token to axios
-    axiosInstance.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer ${accessToken}`;
+    localStorage.setItem("user", JSON.stringify(userData)); // optional
   };
 
-  // ── LOGOUT ────────────────────────────────────────────────────────────────
-  const logout = () => {
+  // ✅ LOGOUT
+  const logout = async () => {
+    try {
+      await axiosInstance.post("/auth/logout");
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+
     setUser(null);
-    setToken(null);
-
     localStorage.removeItem("user");
-    localStorage.removeItem("token");
-
-    // ✅ Remove token from axios
-    delete axiosInstance.defaults.headers.common["Authorization"];
 
     window.location.href = "/login";
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// ── Custom Hook ─────────────────────────────────────────────────────────────
+// ✅ Custom hook
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");

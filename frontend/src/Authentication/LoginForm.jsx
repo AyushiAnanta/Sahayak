@@ -13,7 +13,7 @@ const LoginForm = ({ switchToSignup }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ✅ RTL support
+  // ✅ Handle RTL dynamically
   useEffect(() => {
     document.body.dir = i18n.language === "ur" ? "rtl" : "ltr";
   }, [i18n.language]);
@@ -42,20 +42,17 @@ const LoginForm = ({ switchToSignup }) => {
 
       const response = await loginUser(payload);
 
+      // ✅ ONLY USER (token is in cookie)
       const userData = response?.data?.user;
-      const accessToken =
-        response?.data?.token ||
-        response?.data?.accessToken ||
-        response?.data?.data?.token;
 
-      if (!userData || !accessToken) {
+      if (!userData) {
         throw new Error(t("loginFailed"));
       }
 
-      // ✅ correct place to call login
-      login(userData, accessToken);
+      // ✅ Save only user
+      login(userData);
 
-      // ✅ Redirect by role
+      // ✅ Redirect
       if (userData?.role === "department") {
         window.location.href = "/department";
       } else if (userData?.role === "officer") {
