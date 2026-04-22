@@ -28,5 +28,60 @@
   "signupFailed": "साइनअप विफल",
 
   "brandTitle": "सहायक",
-"brandDescription": "आपका डिजिटल शिकायत सहायक जो नागरिकों को अधिकारियों से प्रभावी रूप से जोड़ता है।"
+"brandDescription": "आपका डिजिटल शिकायत सहायक जो नागरिकों को अधिकारियों से प्रभावी रूप से जोड़ता है।",
+
+ "Dashboard": "डैशबोर्ड",
+  "DashboardSubtitle": "अपनी शिकायतों को ट्रैक और प्रबंधित करें",
+
+  "total": "कुल",
+  "pending": "लंबित",
+  "resolved": "सुलझाई गई",
+
+  "createGrievance": "+ शिकायत दर्ज करें",
+  "createFirstGrievance": "+ पहली शिकायत दर्ज करें",
+
+  "noGrievances": "अभी तक कोई शिकायत नहीं",
+  "noGrievancesDesc": "आपने अभी तक कोई शिकायत दर्ज नहीं की है। अपनी पहली शिकायत दर्ज करके शुरुआत करें।",
+
+  "home": "होम",
+  "create": "बनाएं",
+
+  "complaints": "शिकायतें",
+  "profile": "प्रोफाइल",
+  "logout": "लॉगआउट",
+  "confirmLogout": "लॉगआउट की पुष्टि करें",
+  "areYouSure": "क्या आप निश्चित हैं?",
+  "cancel": "रद्द करें",
+  "createGrievanceTitle": "शिकायत दर्ज करें",
+  "type": "प्रकार",
+  "descriptionPlaceholder": "अपनी समस्या का वर्णन करें...",
+  "language": "भाषा",
+  "category": "श्रेणी",
+  "subCategory": "उप-श्रेणी",
+  "district": "जिला",
+  "pincode": "पिनकोड",
+  "uploadText": "अपनी प्रमाण छवि यहाँ ड्रैग और ड्रॉप करें",
+  "or": "या",
+  "selectImage": "छवि चुनें",
+  "english": "अंग्रेज़ी",
+  "hindi": "हिन्दी",
+  "marathi": "मराठी",
+  "bengali": "बंगाली",
+  "punjabi": "पंजाबी",
+
+  "leakage": "रिसाव",
+  "noSupply": "पानी की आपूर्ति नहीं",
+  "dirtyWater": "गंदा पानी",
+  "powerCut": "बिजली कटौती",
+  "streetLight": "स्ट्रीट लाइट",
+  "billIssue": "बिल समस्या",
+  "potholes": "गड्ढे",
+  "constructionDelay": "निर्माण में देरी",
+  "damage": "क्षति",
+  "garbage": "कचरा",
+  "drainage": "जल निकासी",
+  "cleaning": "सफाई",
+  "general": "सामान्य",
+  "complaint": "शिकायत",
+  "other": "अन्य"
 }

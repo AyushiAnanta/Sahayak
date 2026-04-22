@@ -27,5 +27,27 @@
   "signupFailed": "Signup failed",
 
   "brandTitle": "sahayak",
-  "brandDescription": "Your digital grievance assistant helping citizens connect with authorities efficiently."
+  "brandDescription": "Your digital grievance assistant helping citizens connect with authorities efficiently.",
+  
+  "Dashboard": "Dashboard",
+  "DashboardSubtitle": "Track and manage your grievances",
+
+  "total": "Total",
+  "pending": "Pending",
+  "resolved": "Resolved",
+
+  "createGrievance": "+ Create Grievance",
+  "createFirstGrievance": "+ Create First Grievance",
+
+  "noGrievances": "No grievances yet",
+  "noGrievancesDesc": "You haven't submitted any complaints. Start by creating your first grievance.",
+   "home": "Home",
+  "create": "Create",
+  "complaints": "Complaints",
+  "profile": "Profile",
+  "logout": "Logout",
+  "confirmLogout": "Confirm Logout",
+  "areYouSure": "Are you sure?",
+  "cancel": "Cancel"
+
 }

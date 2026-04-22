@@ -7,18 +7,17 @@ const LANGUAGES = {
   hi: "हिन्दी",
   mr: "मराठी",
   bn: "বাংলা",
-  pa: "ਪੰਜਾਬੀ",
 };
 
 export default function LanguageSwitcher() {
   const [open, setOpen] = useState(false);
   const { i18n } = useTranslation();
 
-  const changeLang = (code) => {
-    i18n.changeLanguage(code);          // ✅ change globally
-    localStorage.setItem("lang", code); // ✅ persist
-    setOpen(false);
-  };
+  const changeLang = async (code) => {
+  await i18n.changeLanguage(code); 
+  localStorage.setItem("lang", code);
+  setOpen(false);
+};
 
   return (
     <div className="relative">

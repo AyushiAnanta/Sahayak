@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getUserGrievances } from "../../api/grievance";
 import Navbar from "../../components/Navbar";
+import { useTranslation } from "react-i18next";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation(); // ✅ ADDED
 
   const [grievances, setGrievances] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,23 +14,26 @@ const Dashboard = () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
 
+  // ✅ RTL support (for Urdu)
+  useEffect(() => {
+    document.body.dir = i18n.language === "ur" ? "rtl" : "ltr";
+  }, [i18n.language]);
+
   useEffect(() => {
     const fetchGrievances = async () => {
       try {
         const res = await getUserGrievances();
-
-        const data =res.data?.data?.grievances || [];
-
+        const data = res.data?.data?.grievances || [];
         setGrievances(Array.isArray(data) ? data : []);
       } catch (err) {
-        setError(err.message || "Failed to load grievances");
+        setError(err.message || t("loadError"));
       } finally {
         setLoading(false);
       }
     };
 
     fetchGrievances();
-  }, []);
+  }, [i18n.language]);
 
   const getStatusColor = (status) => {
     switch (status) {
@@ -52,7 +57,6 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#1f1f23] to-[#26262b] text-white">
 
-      {/* NAVBAR */}
       <Navbar
         user={user}
         onLogout={() => {
@@ -61,17 +65,17 @@ const Dashboard = () => {
         }}
       />
 
-      {/* ✅ FIX: ADD TOP SPACING */}
       <div className="pt-24">
-
         <div className="max-w-6xl mx-auto p-10">
 
           {/* HEADER */}
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h2 className="text-3xl font-bold">Dashboard</h2>
+              <h2 className="text-3xl font-bold">
+                {t("Dashboard")}
+              </h2>
               <p className="text-gray-400 text-sm">
-                Track and manage your grievances
+                {t("DashboardSubtitle")}
               </p>
             </div>
 
@@ -79,30 +83,30 @@ const Dashboard = () => {
               onClick={() => navigate("/dashboard/create")}
               className="bg-[#6c584c] px-5 py-2 rounded-lg hover:opacity-90"
             >
-              + Create Grievance
+              {t("createGrievance")}
             </button>
           </div>
 
           {/* STATS */}
           <div className="grid grid-cols-3 gap-6 mb-10">
             <div className="bg-[#2a2a2f] p-6 rounded-xl">
-              <p className="text-gray-400">Total</p>
+              <p className="text-gray-400">{t("total")}</p>
               <h2 className="text-2xl font-bold">{total}</h2>
             </div>
 
             <div className="bg-[#2a2a2f] p-6 rounded-xl">
-              <p className="text-gray-400">Pending</p>
+              <p className="text-gray-400">{t("pending")}</p>
               <h2 className="text-2xl font-bold text-yellow-400">{pending}</h2>
             </div>
 
             <div className="bg-[#2a2a2f] p-6 rounded-xl">
-              <p className="text-gray-400">Resolved</p>
+              <p className="text-gray-400">{t("resolved")}</p>
               <h2 className="text-2xl font-bold text-green-400">{resolved}</h2>
             </div>
           </div>
 
           {/* STATES */}
-          {loading && <p className="text-gray-400">Loading...</p>}
+          {loading && <p className="text-gray-400">{t("loading")}</p>}
           {error && <p className="text-red-500">{error}</p>}
 
           {/* EMPTY */}
@@ -111,18 +115,18 @@ const Dashboard = () => {
               <div className="text-6xl mb-4">📭</div>
 
               <h2 className="text-xl font-semibold">
-                No grievances yet
+                {t("noGrievances")}
               </h2>
 
               <p className="text-gray-400 mt-2 text-center max-w-md">
-                You haven't submitted any complaints. Start by creating your first grievance.
+                {t("noGrievancesDesc")}
               </p>
 
               <button
                 onClick={() => navigate("/dashboard/create")}
                 className="mt-6 bg-[#6c584c] px-6 py-3 rounded-lg hover:opacity-90"
               >
-                + Create First Grievance
+                {t("createFirstGrievance")}
               </button>
             </div>
           )}
@@ -141,18 +145,18 @@ const Dashboard = () => {
                   </h3>
 
                   <p className="text-sm text-gray-400 mt-2">
-                    Category: {g.category || "N/A"}
+                    {t("category")}: {g.category || "N/A"}
                   </p>
 
                   <p className="text-sm mt-1">
-                    Status:{" "}
+                    {t("status")}:{" "}
                     <span className={getStatusColor(g.status)}>
-                      {g.status}
+                      {t(g.status)} {/* optional translation */}
                     </span>
                   </p>
 
                   <p className="text-sm mt-1">
-                    Priority:{" "}
+                    {t("priority")}:{" "}
                     <span className="text-purple-400">
                       {g.priorityScore ?? "N/A"}
                     </span>

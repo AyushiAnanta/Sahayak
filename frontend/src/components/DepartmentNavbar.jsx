@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next"; // ✅ ADDED
 
 const DepartmentNavbar = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation(); // ✅ ADDED
 
   const [open, setOpen] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -23,10 +25,20 @@ const DepartmentNavbar = ({ user, onLogout }) => {
     { code: "en", label: "English" },
     { code: "hi", label: "हिन्दी" },
     { code: "mr", label: "मराठी" },
-    { code: "pa", label: "ਪੰਜਾਬੀ" },
     { code: "bn", label: "বাংলা" },
-    { code: "ur", label: "اردو" },
   ];
+
+  // ✅ Apply saved language on load
+  useEffect(() => {
+    const savedLang = localStorage.getItem("lang") || "en";
+    setSelectedLang(savedLang);
+    i18n.changeLanguage(savedLang);
+  }, []);
+
+  // ✅ RTL support (for Urdu)
+  useEffect(() => {
+    document.body.dir = i18n.language === "ur" ? "rtl" : "ltr";
+  }, [i18n.language]);
 
   // 🔐 CLOSE DROPDOWNS
   useEffect(() => {
@@ -67,14 +79,14 @@ const DepartmentNavbar = ({ user, onLogout }) => {
             onClick={() => navigate("/department")}
             className={`${isActive("/department")} hover:text-white`}
           >
-            Dashboard
+            {t("dashboard")}
           </button>
 
           <button
             onClick={() => navigate("/department/complaints")}
             className={`${isActive("/department/complaints")} hover:text-white`}
           >
-            Complaints
+            {t("complaints")}
           </button>
 
           {/* 🌐 LANGUAGE DROPDOWN */}
@@ -95,11 +107,18 @@ const DepartmentNavbar = ({ user, onLogout }) => {
                   return (
                     <button
                       key={lang.code}
-                      onClick={() => {
-                        setSelectedLang(lang.code);
-                        localStorage.setItem("lang", lang.code);
-                        setLangOpen(false);
-                      }}
+                      onClick={async () => {
+                      await i18n.changeLanguage(lang.code); // ✅ WAIT for change
+
+                      setSelectedLang(lang.code);
+
+                      localStorage.setItem("lang", lang.code);
+
+                      setLangOpen(false);
+
+                      // 🔥 FORCE RE-RENDER (important for instant update)
+                      window.dispatchEvent(new Event("languageChanged"));
+                    }}
                       className={`w-full flex items-center justify-between px-4 py-2 transition
                         ${
                           isSelected
@@ -159,14 +178,14 @@ const DepartmentNavbar = ({ user, onLogout }) => {
                       isActive("/department/profile") ? "bg-gray-700" : ""
                     }`}
                   >
-                    👤 Profile
+                    👤 {t("profile")}
                   </button>
 
                   <button
                     onClick={() => setShowConfirm(true)}
                     className="mt-2 bg-red-500 text-white p-2 rounded hover:bg-red-600"
                   >
-                    Logout
+                    {t("logout")}
                   </button>
                 </div>
               </div>
@@ -181,15 +200,15 @@ const DepartmentNavbar = ({ user, onLogout }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
 
           <div className="bg-[#2a2a2f] p-6 rounded-xl text-white w-80 text-center shadow-xl">
-            <h2 className="text-lg font-bold">Confirm Logout</h2>
-            <p className="text-gray-400 mt-2">Are you sure?</p>
+            <h2 className="text-lg font-bold">{t("confirmLogout")}</h2>
+            <p className="text-gray-400 mt-2">{t("areYouSure")}</p>
 
             <div className="flex justify-center gap-4 mt-5">
               <button
                 onClick={() => setShowConfirm(false)}
                 className="bg-gray-600 px-4 py-2 rounded hover:bg-gray-500"
               >
-                Cancel
+                {t("cancel")}
               </button>
 
               <button
@@ -199,7 +218,7 @@ const DepartmentNavbar = ({ user, onLogout }) => {
                 }}
                 className="bg-red-500 px-4 py-2 rounded hover:bg-red-600"
               >
-                Logout
+                {t("logout")}
               </button>
             </div>
           </div>
