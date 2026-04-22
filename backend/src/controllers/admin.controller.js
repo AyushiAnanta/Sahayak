@@ -5,7 +5,7 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-
+import { sendEmailNotification } from "../utils/email.js";
 
 // GET /api/admin/grievances — returns all grievances in the system with optional filters
 export const getAllGrievances = asyncHandler(async (req, res) => {
@@ -79,8 +79,22 @@ export const assignGrievance = asyncHandler(async (req, res) => {
     status: "unread",
   });
 
+  const citizenAssign = await User.findById(grievance.userId).select("email name");
+  if (citizenAssign?.email) {
+    await sendEmailNotification({
+      toEmail: citizenAssign.email,
+      toName:  citizenAssign.name,
+      message: "Your grievance has been assigned and is now under process.",
+      notification_type: "Under Process",
+      grievanceId: grievance._id.toString(),
+      district: grievance.district,
+    });
+  }
+  
   return res.status(200).json(new ApiResponse(200, grievance, "Grievance assigned"));
 });
+
+  
 
 
 // PUT /api/admin/status/:id — force-updates the status of any grievance and logs the change
@@ -124,6 +138,18 @@ export const updateGrievanceStatus = asyncHandler(async (req, res) => {
     notification_type: typeMap[status],
     status: "unread",
   });
+
+  const citizenStatus = await User.findById(grievance.userId).select("email name");
+  if (citizenStatus?.email) {
+    await sendEmailNotification({
+      toEmail: citizenStatus.email,
+      toName:  citizenStatus.name,
+      message: `Your grievance status has been updated to: ${status}`,
+      notification_type: typeMap[status],
+      grievanceId: grievance._id.toString(),
+      district: grievance.district,
+    });
+  }
 
   return res.status(200).json(new ApiResponse(200, grievance, "Status updated"));
 });

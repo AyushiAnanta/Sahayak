@@ -1,10 +1,32 @@
 import { Notification } from "../models/notification.model.js";
+import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { sendEmailNotification } from "../utils/email.js";
 
 
-// GET /api/notification — fetches all notifications for the logged-in user, newest first
+// ── Helper — fetch user email and send notification email ─────────────────────
+const notifyByEmail = async (userId, message, notification_type, grievanceId, district) => {
+  try {
+    const user = await User.findById(userId).select("email name");
+    if (!user?.email) return;
+
+    await sendEmailNotification({
+      toEmail: user.email,
+      toName: user.name,
+      message,
+      notification_type,
+      grievanceId: grievanceId?.toString(),
+      district,
+    });
+  } catch (err) {
+    console.error("[notify] Email dispatch failed:", err.message);
+  }
+};
+
+
+// GET /api/notification — fetches all notifications for the logged-in user
 export const getUserNotifications = asyncHandler(async (req, res) => {
   const notifications = await Notification.find({ userId: req.user._id })
     .sort({ createdAt: -1 })
@@ -31,9 +53,19 @@ export const markAsRead = asyncHandler(async (req, res) => {
 });
 
 
-// POST /api/notification/send — admin creates and sends a notification to any user (in-app only)
+// PUT /api/notification/read-all — marks all notifications as read for the user
+export const markAllAsRead = asyncHandler(async (req, res) => {
+  await Notification.updateMany(
+    { userId: req.user._id, status: "unread" },
+    { $set: { status: "read" } }
+  );
+
+  return res.status(200).json(new ApiResponse(200, {}, "All notifications marked as read"));
+});
+
+
+// POST /api/notification/send — admin sends a notification to any user
 export const sendNotification = asyncHandler(async (req, res) => {
-  // notification_type must be one of: Update | Under Process | Completed | Initiated | Dropped
   const { userId, grievanceId, message, notification_type } = req.body;
 
   if (!userId || !grievanceId || !message || !notification_type) {
@@ -47,6 +79,9 @@ export const sendNotification = asyncHandler(async (req, res) => {
     notification_type,
     status: "unread",
   });
+
+  // ✅ Send email — non-blocking
+  notifyByEmail(userId, message, notification_type, grievanceId, null);
 
   return res.status(201).json(new ApiResponse(201, notification, "Notification sent"));
 });

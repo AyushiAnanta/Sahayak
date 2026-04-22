@@ -5,7 +5,7 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-
+import { sendEmailNotification } from "../utils/email.js";
 
 // GET /api/officer/tasks — fetches all grievances assigned to the logged-in officer
 export const getAssignedTasks = asyncHandler(async (req, res) => {
@@ -61,6 +61,18 @@ export const updateTaskProgress = asyncHandler(async (req, res) => {
     status: "unread",
   });
 
+  const citizenProgress = await User.findById(grievance.userId).select("email name");
+  if (citizenProgress?.email) {
+    await sendEmailNotification({
+      toEmail: citizenProgress.email,
+      toName:  citizenProgress.name,
+      message: "Your grievance is currently being worked on by an officer.",
+      notification_type: "Under Process",
+      grievanceId: grievance._id.toString(),
+      district: grievance.district,
+    });
+  }
+
   return res.status(200).json(new ApiResponse(200, grievance, "Progress updated"));
 });
 
@@ -98,6 +110,18 @@ export const completeTask = asyncHandler(async (req, res) => {
     notification_type: "Completed",
     status: "unread",
   });
+
+  const citizenComplete = await User.findById(grievance.userId).select("email name");
+  if (citizenComplete?.email) {
+    await sendEmailNotification({
+      toEmail: citizenComplete.email,
+      toName:  citizenComplete.name,
+      message: "Your grievance has been resolved. Please submit your feedback.",
+      notification_type: "Completed",
+      grievanceId: grievance._id.toString(),
+      district: grievance.district,
+    });
+  }
 
   return res.status(200).json(new ApiResponse(200, grievance, "Task marked as resolved"));
 });

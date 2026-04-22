@@ -6,7 +6,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-
+import { sendEmailNotification } from "../utils/email.js";
 // Import AI helpers — these call Python internally, no HTTP needed from frontend
 import {
   runTranslate,
@@ -156,6 +156,16 @@ export const createGrievance = asyncHandler(async (req, res) => {
     notification_type: "Initiated",
     status: "unread",
   });
+
+  await sendEmailNotification({
+    toEmail: req.user.email,
+    toName:  req.user.name,
+    message: `Your grievance has been submitted and classified under ${classification.category}. ID: ${grievance._id}`,
+    notification_type: "Initiated",
+    grievanceId: grievance._id.toString(),
+    district: grievance.district,
+  });
+ 
 
   return res.status(201).json(new ApiResponse(201, {
     grievance,
