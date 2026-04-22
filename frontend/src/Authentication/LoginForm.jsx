@@ -28,58 +28,55 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
   };
 
   const handleLogin = async () => {
-    const { identifier, password } = form;
+  const { identifier, password } = form;
 
-    if (!identifier || !password) {
-      setError(t.errorFill || "Enter email/username and password");
-      return;
+  if (!identifier || !password) {
+    setError(t.errorFill || "Enter email/username and password");
+    return;
+  }
+
+  try {
+    setLoading(true);
+    setError("");
+
+    const isEmail = identifier.includes("@");
+    const payload = isEmail
+      ? { email: identifier, password }
+      : { username: identifier, password };
+
+    const response = await loginUser(payload);
+
+    const userData = response?.data?.user;
+    const accessToken =
+      response?.data?.token ||
+      response?.data?.accessToken ||
+      response?.data?.data?.token;
+
+    if (!userData || !accessToken) {
+      throw new Error("User or token missing from backend response");
     }
 
-    try {
-      setLoading(true);
-      setError("");
+    // ✅ FIXED
+    login(userData, accessToken);
 
-      const isEmail = identifier.includes("@");
-      const payload = isEmail
-        ? { email: identifier, password }
-        : { username: identifier, password };
-
-      const response = await loginUser(payload);
-
-      console.log("FULL RESPONSE:", response);
-
-      // ── Extract user and token from response ──────────────────────────────
-      // Adjust these keys to match exactly what your backend returns
-      const userData    = response?.data?.user;
-      const accessToken = response?.data?.token        // try this first
-                       || response?.data?.accessToken  // fallback
-                       || response?.data?.data?.token; // nested fallback
-
-      console.log("USER:", userData, "| TOKEN:", accessToken);
-
-      if (!userData) throw new Error("User data missing from backend response");
-
-      // ── Save both via AuthContext (sets localStorage + state) ─────────────
-      login(userData);
-
-      // ── Redirect by role ──────────────────────────────────────────────────
-      if (userData?.role === "department") {
-        window.location.href = "/department";
-      } else if (userData?.role === "officer") {
-        window.location.href = "/officer";
-      } else if (userData?.role === "admin") {
-        window.location.href = "/admin";
-      } else {
-        window.location.href = "/dashboard";
-      }
-
-    } catch (err) {
-      console.error("❌ LOGIN ERROR:", err);
-      setError(err.message || "Login failed");
-    } finally {
-      setLoading(false);
+    // ✅ Redirect
+    if (userData?.role === "department") {
+      window.location.href = "/department";
+    } else if (userData?.role === "officer") {
+      window.location.href = "/officer";
+    } else if (userData?.role === "admin") {
+      window.location.href = "/admin";
+    } else {
+      window.location.href = "/dashboard";
     }
-  };
+
+  } catch (err) {
+    console.error("❌ LOGIN ERROR:", err);
+    setError(err.message || "Login failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div

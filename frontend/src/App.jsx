@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 
 // AUTH
 import Authentication from "./Authentication/Authenticate";
+import GoogleSuccess from "./Authentication/GoogleSuccess";
 
 // CITIZEN
 import Dashboard from "./pages/citizens/Dashboard";
@@ -42,6 +43,7 @@ function AppRoutes() {
       <Route path="/"       element={<Authentication />} />
       <Route path="/login"  element={<Authentication />} />
       <Route path="/signup" element={<Authentication />} />
+      <Route path="/google-success" element={<GoogleSuccess />} />
 
       {/* CITIZEN */}
       <Route path="/dashboard"            element={<ProtectedRoute allowedRoles={["user"]}><Dashboard /></ProtectedRoute>} />
