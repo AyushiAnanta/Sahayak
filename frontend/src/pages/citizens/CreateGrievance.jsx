@@ -23,12 +23,19 @@ const LANG_TO_RECOGNITION = {
   mr: "mr-IN",
 };
 
+// Categories match department category_handled values exactly.
+// Subcategories are common complaint types within each domain.
 const CATEGORY_MAP = {
-  water: ["Leakage", "No Supply", "Dirty Water"],
-  electricity: ["Power Cut", "Street Light", "Bill Issue"],
-  road: ["Potholes", "Construction Delay", "Damage"],
-  sanitation: ["Garbage", "Drainage", "Cleaning"],
-  others: ["General", "Complaint", "Other"],
+  Agriculture: ["Crop Damage", "Irrigation Issue", "Fertilizer Supply", "Pest Control", "Other"],
+  ConsumerAffairs: ["Overcharging", "Defective Product", "False Advertisement", "Refund Issue", "Other"],
+  Education: ["School Infrastructure", "Teacher Absence", "Scholarship", "Mid-Day Meal", "Other"],
+  Electricity: ["Power Cut", "Street Light", "Bill Issue", "Meter Fault", "Other"],
+  Food: ["Ration Card", "PDS Supply", "Food Quality", "Distribution Delay", "Other"],
+  General: ["General Complaint", "Information Request", "Other"],
+  Healthcare: ["Hospital Service", "Medicine Availability", "Ambulance", "Sanitation", "Other"],
+  Labour: ["Wage Dispute", "Workplace Safety", "Employment", "Child Labour", "Other"],
+  Road: ["Potholes", "Construction Delay", "Road Damage", "Signage", "Other"],
+  Water: ["No Supply", "Leakage", "Dirty Water", "Pipeline Repair", "Other"],
 };
 
 const CreateGrievance = () => {
@@ -48,7 +55,6 @@ const CreateGrievance = () => {
     proofImage: null,
   });
 
-  // Stores the cloudinary URL + OCR text returned from /grievance/upload
   const [uploadedFileUrl, setUploadedFileUrl] = useState("");
   const [ocrText, setOcrText] = useState("");
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -108,7 +114,7 @@ const CreateGrievance = () => {
     setRecording(false);
   };
 
-  // ─── FILE HANDLER — uploads immediately so OCR runs before submit ─────────
+  // ─── FILE HANDLER ─────────────────────────────────────────────────────────
 
   const handleFile = async (file) => {
     setForm((prev) => ({ ...prev, file }));
@@ -121,12 +127,9 @@ const CreateGrievance = () => {
 
       setUploadedFileUrl(url);
 
-      // Use translatedText (English) as the canonical text for classification;
-      // fall back to extractedText if translation didn't run
       const text = translatedText || extractedText || "";
       setOcrText(text);
 
-      // Also surface it in the textarea so the user can review / correct it
       setForm((prev) => ({
         ...prev,
         originalText: text,
@@ -160,7 +163,6 @@ const CreateGrievance = () => {
       return;
     }
 
-    // For image/pdf, OCR must have run and produced some text
     if ((form.inputType === "image" || form.inputType === "pdf") && !form.originalText) {
       setError("Could not extract text from the file. Please type your complaint manually.");
       return;
@@ -174,10 +176,9 @@ const CreateGrievance = () => {
     try {
       setLoading(true);
 
-      let fileUrl = uploadedFileUrl; // already uploaded during handleFile
+      let fileUrl = uploadedFileUrl;
       let proofUrl = "";
 
-      // Proof image — upload now (it's only for evidence, no OCR needed)
       if (form.proofImage) {
         const res = await uploadGrievanceFile(form.proofImage);
         proofUrl = res.data.data.url;
@@ -313,7 +314,6 @@ const CreateGrievance = () => {
                 )}
               </div>
 
-              {/* Show OCR result so user can review / fix it */}
               {form.originalText ? (
                 <div className="mt-4">
                   <p className="text-xs text-gray-400 mb-1">
@@ -366,7 +366,7 @@ const CreateGrievance = () => {
             >
               <option value="">Category</option>
               {Object.keys(CATEGORY_MAP).map((c) => (
-                <option key={c}>{c}</option>
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
 
@@ -380,7 +380,7 @@ const CreateGrievance = () => {
               <option value="">SubCategory</option>
               {form.category &&
                 CATEGORY_MAP[form.category].map((s) => (
-                  <option key={s}>{s}</option>
+                  <option key={s} value={s}>{s}</option>
                 ))}
             </select>
 
@@ -398,7 +398,7 @@ const CreateGrievance = () => {
               inputMode="numeric"
               className="p-3 bg-[#1f1f23] border border-gray-600 rounded-lg"
               onChange={(e) => {
-                const val = e.target.value.replace(/\D/g, "").slice(0, 6); // digits only
+                const val = e.target.value.replace(/\D/g, "").slice(0, 6);
                 setForm((prev) => ({ ...prev, pincode: val }));
               }}
             />

@@ -12,10 +12,13 @@ export const updateGrievanceStatus = (id, data) => API.put(`/admin/status/${id}`
 
 // ADMIN STATS
 export const getMonthlyStats = () => API.get("/admin/stats/monthly");
-export const getUserStats = () => API.get("/admin/stats/users"); // ✅ new
+export const getUserStats = () => API.get("/admin/stats/users");
 
 // ADMIN NOTIFICATIONS
 export const getAdminNotifications = () => API.get("/admin/notifications");
 
 // DEPARTMENTS
 export const getDepartments = () => API.get("/department/all");
+
+// STATUS LOG
+export const getStatusHistory = (grievanceId) => API.get(`/status-log/${grievanceId}`);

@@ -80,7 +80,11 @@ const AssignedComplaints = () => {
     try {
       // Assign officer if changed
       if (selectedOfficerId && selectedOfficerId !== (selected.assignedOfficerId?._id || "")) {
-        await assignToOfficer(selected._id, selectedOfficerId);
+        await assignToOfficer(
+          selected._id,
+          selectedOfficerId,
+          user.departmentId
+        );
       }
 
       // Update status if changed
