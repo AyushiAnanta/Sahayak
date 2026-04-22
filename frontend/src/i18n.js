@@ -6,7 +6,6 @@ import hi from "./translations/hi.json";
 import mr from "./translations/mr.json";
 import bn from "./translations/bn.json";
 import pa from "./translations/pa.json";
-import ur from "./translations/ur.json";
 
 i18n
   .use(initReactI18next)
@@ -17,7 +16,6 @@ i18n
       mr: { translation: mr },
       bn: { translation: bn },
       pa: { translation: pa },
-      ur: { translation: ur },
     },
     lng: localStorage.getItem("lang") || "en",
     fallbackLng: "en",
