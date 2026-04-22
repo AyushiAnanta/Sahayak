@@ -19,9 +19,11 @@ export const getOfficersByDepartment = (deptId) =>
   API.get(`/officer/by-department/${deptId}`);
 
 // Assign grievance to a specific officer
-export const assignToOfficer = (grievanceId, officerId) =>
-  API.put(`/admin/assign/${grievanceId}`, { officerId });
-
+export const assignToOfficer = (grievanceId, officerId, departmentId) =>
+  API.put(`/admin/assign/${grievanceId}`, {
+    officerId,
+    departmentId,
+  });
 // Update grievance status
 export const updateGrievanceStatus = (grievanceId, status) =>
   API.put(`/admin/status/${grievanceId}`, { status });
