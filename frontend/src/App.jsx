@@ -25,6 +25,7 @@ import DepartmentProfile from "./pages/department/DepartmentProfile";
 import OfficerDashboard from "./pages/officer/Dashboard";
 import OfficerTasks from "./pages/officer/Tasks";
 import OfficerProfile from "./pages/officer/Profile";
+import GrievanceStatus from "./pages/citizens/Grievancestatus";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
@@ -49,6 +50,7 @@ function AppRoutes() {
       <Route path="/dashboard/create"     element={<ProtectedRoute allowedRoles={["user"]}><CreateGrievance /></ProtectedRoute>} />
       <Route path="/dashboard/complaints" element={<ProtectedRoute allowedRoles={["user"]}><Complaints /></ProtectedRoute>} />
       <Route path="/dashboard/profile"    element={<ProtectedRoute allowedRoles={["user"]}><Profile /></ProtectedRoute>} />
+      <Route path="/dashboard/status"     element={<ProtectedRoute allowedRoles={["user"]}><GrievanceStatus/></ProtectedRoute>} />
 
       {/* ADMIN */}
       <Route path="/admin"                element={<ProtectedRoute allowedRoles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
