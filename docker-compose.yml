@@ -21,17 +21,18 @@ services:
       - ./ai-service/.env
     environment:
       - PORT=8001
-      - GROQ_API_KEY=${GROQ_API_KEY} # Passed from host .env
+      - GROQ_API_KEY=${GROQ_API_KEY}
     volumes:
       - ./ai-service:/app
     networks:
       - sahayak-net
-    # Check if the FastAPI server is actually responding
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"] # Make sure you have a /health route!
+      # This uses Python's built-in library to ping your new /health route
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001/health')"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 40s # CRITICAL: Gives your AI models time to load before checking
     restart: always
 
   # 3. Node.js Backend
