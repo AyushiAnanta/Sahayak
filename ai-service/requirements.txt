@@ -13,6 +13,6 @@ pdfplumber
 pdf2image
 python-multipart
 pydantica
---index-url https://download.pytorch.org/whl/cpu
 torch
 torchvision
+\--extra-index-url https://download.pytorch.org/whl/cpu
