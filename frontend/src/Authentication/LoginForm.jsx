@@ -45,19 +45,18 @@ const LoginForm = ({ switchToSignup, lang = "en" }) => {
       : { username: identifier, password };
 
     const response = await loginUser(payload);
-
     const userData = response?.data?.user;
     const accessToken =
       response?.data?.token ||
       response?.data?.accessToken ||
       response?.data?.data?.token;
 
-    if (!userData || !accessToken) {
+    if (!userData) {
       throw new Error("User or token missing from backend response");
     }
 
     // ✅ FIXED
-    login(userData, accessToken);
+    login(userData);
 
     // ✅ Redirect
     if (userData?.role === "department") {
