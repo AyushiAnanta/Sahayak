@@ -11,6 +11,7 @@
   "signup": "साइन अप",
   "errorFill": "सभी फ़ील्ड आवश्यक हैं",
   "invalid": "अमान्य ईमेल या पासवर्ड",
+  "googleSignIn": "Google से साइन इन करें",
 
   "createAccount": "खाता बनाएं",
   "signupSubtitle": "सहायक शिकायत पोर्टल से जुड़ें",
