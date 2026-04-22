@@ -7,11 +7,12 @@ export const googleCallback = asyncHandler(async (req, res) => {
 
   const { accessToken, refreshToken } = generateTokens(user);
 
+  // (optional) still keep cookies if you want
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
     secure: false,
     sameSite: "lax",
-      path: "/", 
+    path: "/",
     maxAge: 15 * 60 * 1000,
   });
 
@@ -19,9 +20,12 @@ export const googleCallback = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: false,
     sameSite: "lax",
-      path: "/", 
+    path: "/",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
- return res.redirect("http://localhost:5173/dashboard");
+  // ✅ CRITICAL: send token + role to frontend
+  return res.redirect(
+  `http://localhost:5173/google-success?token=${accessToken}&role=${user.role || "user"}`
+);
 });
