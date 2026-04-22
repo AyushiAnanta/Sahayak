@@ -1,18 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AuthInput from "./AuthInput";
 import GoogleAuthButton from "./GoogleAuthButton";
 import { registerUser } from "../api/auth";
+import { useTranslation } from "react-i18next";
 
-// import translations (same as login)
-import hi from "../translations/hi.json";
-import mr from "../translations/mr.json";
-import ur from "../translations/ur.json";
-import pa from "../translations/pa.json";
-import en from "../translations/en.json";
+const SignupForm = ({ switchToLogin }) => {
+  const { t, i18n } = useTranslation();
 
-const TEXTS = { en, hi, mr, ur, pa };
-
-const SignupForm = ({ switchToLogin, lang = "en" }) => {
   const [form, setForm] = useState({
     name: "",
     username: "",
@@ -24,8 +18,10 @@ const SignupForm = ({ switchToLogin, lang = "en" }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // selected language text (same as login)
-  const t = TEXTS[lang] || TEXTS.en;
+  // ✅ RTL support
+  useEffect(() => {
+    document.body.dir = i18n.language === "ur" ? "rtl" : "ltr";
+  }, [i18n.language]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -36,7 +32,7 @@ const SignupForm = ({ switchToLogin, lang = "en" }) => {
     const { name, username, email, password } = form;
 
     if (!name || !username || !email || !password) {
-      setError(t.errorFill || "All fields are required");
+      setError(t("errorFill"));
       return;
     }
 
@@ -46,12 +42,11 @@ const SignupForm = ({ switchToLogin, lang = "en" }) => {
 
       await registerUser(form);
 
-      // optional success message
-      setError(t.signupSuccess || "Account created successfully");
+      setError(t("signupSuccess"));
 
       setTimeout(() => switchToLogin(), 1500);
     } catch (err) {
-      setError(err.message || t.signupFailed || "Signup failed");
+      setError(err.message || t("signupFailed"));
     } finally {
       setLoading(false);
     }
@@ -61,23 +56,23 @@ const SignupForm = ({ switchToLogin, lang = "en" }) => {
     <div
       className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl border border-neutral-200"
       style={{
-        direction: t.direction || "ltr",
-        textAlign: t.direction === "rtl" ? "right" : "left",
+        direction: i18n.language === "ur" ? "rtl" : "ltr",
+        textAlign: i18n.language === "ur" ? "right" : "left",
       }}
     >
       <h2 className="text-3xl font-bold text-center text-neutral-800">
-        {t.createAccount || "Create Account"}
+        {t("createAccount")}
       </h2>
 
       <p className="text-center mt-2 text-sm text-neutral-500">
-        {t.signupSubtitle || "Join Sahāyak grievance portal"}
+        {t("signupSubtitle")}
       </p>
 
       <div className="flex flex-col gap-4 mt-6">
         <AuthInput
           name="name"
           type="text"
-          placeholder={t.fullNamePlaceholder || "Full Name"}
+          placeholder={t("fullNamePlaceholder")}
           value={form.name}
           onChange={handleChange}
         />
@@ -85,7 +80,7 @@ const SignupForm = ({ switchToLogin, lang = "en" }) => {
         <AuthInput
           name="username"
           type="text"
-          placeholder={t.usernamePlaceholder || "Username"}
+          placeholder={t("usernamePlaceholder")}
           value={form.username}
           onChange={handleChange}
         />
@@ -93,7 +88,7 @@ const SignupForm = ({ switchToLogin, lang = "en" }) => {
         <AuthInput
           name="email"
           type="email"
-          placeholder={t.emailPlaceholder || "Email address"}
+          placeholder={t("emailPlaceholder")}
           value={form.email}
           onChange={handleChange}
         />
@@ -101,7 +96,7 @@ const SignupForm = ({ switchToLogin, lang = "en" }) => {
         <AuthInput
           name="password"
           type="password"
-          placeholder={t.passwordPlaceholder || "Password"}
+          placeholder={t("passwordPlaceholder")}
           value={form.password}
           onChange={handleChange}
         />
@@ -112,12 +107,11 @@ const SignupForm = ({ switchToLogin, lang = "en" }) => {
           onChange={handleChange}
           className="w-full px-4 py-3 rounded-xl border border-neutral-300 focus:border-[#6c584c] focus:ring-2 focus:ring-[#6c584c]/20 outline-none transition bg-white"
         >
-          <option value="user">{t.user || "User"}</option>
-          <option value="officer">{t.officer || "Officer"}</option>
+          <option value="user">{t("user")}</option>
+          <option value="officer">{t("officer")}</option>
         </select>
       </div>
 
-      {/* same error style as login */}
       {error && (
         <p className="mt-3 text-sm text-red-500 text-center">{error}</p>
       )}
@@ -127,9 +121,7 @@ const SignupForm = ({ switchToLogin, lang = "en" }) => {
         disabled={loading}
         className="w-full mt-6 py-3 rounded-xl bg-[#6c584c] hover:bg-[#5a483f] text-white font-semibold transition disabled:opacity-50"
       >
-        {loading
-          ? t.creatingAccount || "Creating account..."
-          : t.signupButton || "Sign Up"}
+        {loading ? t("creatingAccount") : t("signupButton")}
       </button>
 
       <div className="mt-4">
@@ -137,12 +129,12 @@ const SignupForm = ({ switchToLogin, lang = "en" }) => {
       </div>
 
       <p className="text-center mt-6 text-sm text-neutral-600">
-        {t.haveAccount || "Already have an account?"}
+        {t("haveAccount")}
         <button
           onClick={switchToLogin}
           className="ml-2 font-semibold text-[#6c584c] hover:underline"
         >
-          {t.login || "Login"}
+          {t("login")}
         </button>
       </p>
     </div>
