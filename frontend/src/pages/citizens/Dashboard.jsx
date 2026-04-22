@@ -145,7 +145,7 @@ const Dashboard = () => {
                   </h3>
 
                   <p className="text-sm text-gray-400 mt-2">
-                    {t("category")}: {g.category || "N/A"}
+                   {t("category")}: {g.category ? t(g.category) : t("na")}
                   </p>
 
                   <p className="text-sm mt-1">

@@ -5,8 +5,10 @@ import {
   deleteGrievance
 } from "../../api/grievance";
 import Navbar from "../../components/Navbar";
+import { useTranslation } from "react-i18next";
 
 const Complaints = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -93,14 +95,14 @@ const Complaints = () => {
         <div className="flex justify-between items-center mb-10">
 
           <h1 className="text-3xl font-bold text-[#e8d4a2]">
-            All Complaints
+            {t("allComplaints")}
           </h1>
 
           <button
             onClick={() => navigate("/dashboard/create")}
             className="bg-[#6c584c] px-5 py-2 rounded-lg hover:opacity-90 shadow"
           >
-            + New Complaint
+          + {t("newComplaint")}
           </button>
 
         </div>
@@ -111,7 +113,7 @@ const Complaints = () => {
         ) : grievances.length === 0 ? (
 
           <p className="text-gray-400">
-            No complaints found.
+        {t("noComplaints")}
           </p>
 
         ) : (
@@ -132,12 +134,12 @@ const Complaints = () => {
 
                 {/* CATEGORY */}
                 <p className="text-sm text-gray-400">
-                  Category: {g.category}
+                   {t("category")}: {g.category ? t(g.category) : t("na")}
                 </p>
 
                 {/* LOCATION */}
                 <p className="text-sm text-gray-400 mt-1">
-                  📍 {g.district} | {g.pincode}
+                  📍 {g.district || t("na")} | {g.pincode || t("na")}
                 </p>
 
                 {/* STATUS */}
@@ -163,7 +165,7 @@ const Complaints = () => {
                     }
                     className="text-xs px-3 py-1 bg-gray-700 rounded"
                   >
-                    View
+                      {t("view")}
                   </button>
 
                   <button
@@ -172,14 +174,14 @@ const Complaints = () => {
                     }
                     className="text-xs px-3 py-1 bg-blue-600 rounded"
                   >
-                    Edit
+                    {t("edit")}
                   </button>
 
                   <button
                     onClick={() => handleDelete(g._id)}
                     className="text-xs px-3 py-1 bg-red-600 rounded"
                   >
-                    Delete
+                   {t("delete")}
                   </button>
 
                 </div>

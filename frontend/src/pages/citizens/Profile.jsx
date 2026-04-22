@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import Navbar from "../../components/Navbar";
+import { useTranslation } from "react-i18next";
 
 const Profile = () => {
+  const { t } = useTranslation();
   const storedUser = JSON.parse(localStorage.getItem("user"));
 
   const [user, setUser] = useState(storedUser);
@@ -19,7 +21,7 @@ const Profile = () => {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center text-white bg-[#1f1f23]">
-        No user data found
+       {t("noUser")}
       </div>
     );
   }
@@ -43,7 +45,7 @@ const Profile = () => {
           {/* HEADER */}
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-[#e8d4a2]">
-              Profile
+           {t("profile")}
             </h2>
 
             {!editMode ? (
@@ -51,14 +53,14 @@ const Profile = () => {
                 onClick={() => setEditMode(true)}
                 className="bg-[#6c584c] px-5 py-2 rounded-lg"
               >
-                Edit
+             {t("edit")}
               </button>
             ) : (
               <button
                 onClick={handleSave}
                 className="bg-green-500 px-5 py-2 rounded-lg"
               >
-                Save
+               {t("save")}
               </button>
             )}
           </div>
@@ -77,7 +79,7 @@ const Profile = () => {
           <div className="grid md:grid-cols-2 gap-6">
 
             <InputField
-              label="Full Name"
+              label={t("fullName")}
               name="name"
               value={user.name}
               editMode={editMode}
@@ -85,7 +87,7 @@ const Profile = () => {
             />
 
             <InputField
-              label="Username"
+              label={t("username")}
               name="username"
               value={user.username}
               editMode={editMode}
@@ -93,7 +95,7 @@ const Profile = () => {
             />
 
             <InputField
-              label="Email"
+              label={t("email")}
               name="email"
               value={user.email}
               editMode={editMode}
@@ -101,7 +103,7 @@ const Profile = () => {
             />
 
             <InputField
-              label="Contact Number"
+              label={t("contactNumber")}
               name="contact"
               value={user.contact}
               editMode={editMode}
@@ -109,7 +111,7 @@ const Profile = () => {
             />
 
             <InputField
-              label="Location"
+              label={t("location")}
               name="location"
               value={user.location}
               editMode={editMode}
@@ -117,7 +119,7 @@ const Profile = () => {
             />
 
             <InputField
-              label="Pincode"
+              label={t("pincode")}
               name="pincode"
               value={user.pincode}
               editMode={editMode}
@@ -128,7 +130,7 @@ const Profile = () => {
 
           {/* USER ID */}
           <div className="mt-8 text-sm text-gray-500">
-            User ID: {user._id}
+           {t("userId")}: {user._id}
           </div>
 
         </div>
