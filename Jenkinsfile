@@ -16,15 +16,18 @@ pipeline {
         // We skipped the redundant NPM steps and go straight to Docker!
         stage('Deploy Application') {
             steps {
-                // 1. Create the directory and a dummy .env file so Docker doesn't crash
-                sh 'mkdir -p ai-service && touch ai-service/.env'
+                // Create dummy .env files for ALL services that expect them
+                sh '''
+                    mkdir -p ai-service && touch ai-service/.env
+                    mkdir -p backend && touch backend/.env
+                    mkdir -p frontend && touch frontend/.env
+                '''
                 
-                // 2. Use withCredentials to securely pass your Groq key
-                // Note: You must first add 'GROQ_API_KEY' to Jenkins -> Manage Jenkins -> Credentials
                 withCredentials([string(credentialsId: 'groq-api-key', variable: 'GROQ_KEY')]) {
+                    // Pass the key and run the build
                     sh "export GROQ_API_KEY=${GROQ_KEY} && docker-compose up -d --build"
                 }
-    }
+            }
 }
         stage('Deploy') {
             steps {
