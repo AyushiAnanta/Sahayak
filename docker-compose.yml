@@ -1,47 +1,75 @@
 services:
-
-  # 1. The Database (MongoDB)
+  # 1. The Database
   database:
     image: mongo:latest
+    container_name: sahayak-db
     ports:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - sahayak-net
+    restart: always
 
-  # 2. Python AI Service — must start before backend so backend can call it
+  # 2. Python AI Service
   ai-service:
     build: ./ai-service
+    container_name: sahayak-ai
     ports:
       - "8001:8001"
     env_file:
       - ./ai-service/.env
     environment:
       - PORT=8001
+      - GROQ_API_KEY=${GROQ_API_KEY} # Passed from host .env
     volumes:
-      - ./ai-service:/app   # live reload during dev
+      - ./ai-service:/app
+    networks:
+      - sahayak-net
+    # Check if the FastAPI server is actually responding
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"] # Make sure you have a /health route!
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
 
   # 3. Node.js Backend
   backend:
     build: ./backend
+    container_name: sahayak-backend
     ports:
       - "5001:5000"
     depends_on:
-      - database
-      - ai-service           # wait for AI service before starting
+      ai-service:
+        condition: service_healthy # Wait for AI to finish loading models
+      database:
+        condition: service_started
     env_file:
       - ./backend/.env
     environment:
       - PORT=5000
       - MONGO_URI=mongodb://database:27017/aigrievance
-      - PYTHON_AI_SERVICE_URL=http://ai-service:8001   # internal Docker DNS
+      - PYTHON_AI_SERVICE_URL=http://ai-service:8001
+    networks:
+      - sahayak-net
+    restart: always
 
   # 4. React Frontend
   frontend:
     build: ./frontend
+    container_name: sahayak-frontend
     ports:
       - "5173:5173"
     depends_on:
       - backend
+    networks:
+      - sahayak-net
+    restart: always
+
+networks:
+  sahayak-net:
+    driver: bridge
 
 volumes:
   mongo-data:

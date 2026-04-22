@@ -23,6 +23,13 @@ pipeline {
                 sh 'docker-compose up -d --build'
             }
         }
+        stage('Deploy') {
+            steps {
+                withCredentials([string(credentialsId: 'groq-api-key', variable: 'GROQ_API_KEY')]) {
+                    sh "export GROQ_API_KEY=${GROQ_API_KEY} && docker-compose up -d --build"
+        }
+    }
+}
     }
     
     post {
