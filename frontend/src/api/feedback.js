@@ -2,7 +2,6 @@ import axiosInstance from "./axios";
 
 // SUBMIT FEEDBACK
 export const submitFeedback = async (grievanceId, data) => {
-  // data: { rating, resolved, comments }
   return axiosInstance.post(`/feedback/${grievanceId}`, data);
 };
 

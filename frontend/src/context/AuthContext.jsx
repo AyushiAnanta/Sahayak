@@ -7,14 +7,12 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ REHYDRATE USER FROM BACKEND (COOKIE BASED)
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const res = await axiosInstance.get("/auth/me");
 
-        // ✅ VERY IMPORTANT FIX
-        setUser(res.data.data);   // <-- this was your bug
+        setUser(res.data.data); 
 
       } catch (err) {
         setUser(null);
@@ -26,13 +24,13 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, []);
 
-  // ✅ LOGIN (NO TOKEN)
+  //  LOGIN
   const login = (userData) => {
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData)); // optional
+    localStorage.setItem("user", JSON.stringify(userData)); 
   };
 
-  // ✅ LOGOUT
+  //  LOGOUT
   const logout = async () => {
     try {
       await axiosInstance.post("/auth/logout");
@@ -53,7 +51,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// ✅ Custom hook
 export const useAuth = () => {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used inside <AuthProvider>");

@@ -3,7 +3,7 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-// verifyJWT — reads accessToken from cookie, validates it, attaches user to req
+// verifyJWT — 
 export const verifyJWT = asyncHandler(async (req, res, next) => {
   const token = req.cookies?.accessToken;
   if (!token) throw new ApiError(401, "Unauthorized — no token");
@@ -22,7 +22,7 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
   next();
 });
 
-// authorizeRoles — checks that req.user.role is one of the allowed roles
+// authorizeRoles 
 export const authorizeRoles = (...roles) => (req, res, next) => {
   if (!roles.includes(req.user.role)) {
     throw new ApiError(403, `Access denied. Required role: ${roles.join(" or ")}`);

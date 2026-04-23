@@ -6,7 +6,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEmailNotification } from "../utils/email.js";
 
 
-// ── Helper — fetch user email and send notification email ─────────────────────
 const notifyByEmail = async (userId, message, notification_type, grievanceId, district) => {
   try {
     const user = await User.findById(userId).select("email name");
@@ -26,7 +25,7 @@ const notifyByEmail = async (userId, message, notification_type, grievanceId, di
 };
 
 
-// GET /api/notification — fetches all notifications for the logged-in user
+// GET /api/notification 
 export const getUserNotifications = asyncHandler(async (req, res) => {
   const notifications = await Notification.find({ userId: req.user._id })
     .sort({ createdAt: -1 })
@@ -37,7 +36,7 @@ export const getUserNotifications = asyncHandler(async (req, res) => {
 });
 
 
-// PUT /api/notification/:id/read — marks a single notification as read
+// PUT /api/notification/:id/read 
 export const markAsRead = asyncHandler(async (req, res) => {
   const notification = await Notification.findOne({
     _id: req.params.id,
@@ -53,7 +52,7 @@ export const markAsRead = asyncHandler(async (req, res) => {
 });
 
 
-// PUT /api/notification/read-all — marks all notifications as read for the user
+// PUT /api/notification/read-all
 export const markAllAsRead = asyncHandler(async (req, res) => {
   await Notification.updateMany(
     { userId: req.user._id, status: "unread" },
@@ -64,7 +63,7 @@ export const markAllAsRead = asyncHandler(async (req, res) => {
 });
 
 
-// POST /api/notification/send — admin sends a notification to any user
+// POST /api/notification/send
 export const sendNotification = asyncHandler(async (req, res) => {
   const { userId, grievanceId, message, notification_type } = req.body;
 
@@ -80,7 +79,7 @@ export const sendNotification = asyncHandler(async (req, res) => {
     status: "unread",
   });
 
-  // ✅ Send email — non-blocking
+  // Send email 
   notifyByEmail(userId, message, notification_type, grievanceId, null);
 
   return res.status(201).json(new ApiResponse(201, notification, "Notification sent"));

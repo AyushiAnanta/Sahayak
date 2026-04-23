@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(express.static("public"));
 app.use(cookieParser());
 
-// ── Routes ────────────────────────────────────────────────────────────────────
+//  Routes 
 app.use("/api/auth",         authRoutes);
 app.use("/api/google",       googleRoutes);
 app.use("/api/grievance",    grievanceRoutes);
@@ -44,9 +44,8 @@ app.use("/api/ai-log",       aiLogRoutes);
 app.use("/api/ai",           aiRoutes);
 app.use("/api/admin",        adminRoutes);
 app.use("/api/officer",      officerRoutes);
-app.use("/api",              miscRoutes);   // /health /location /languages
+app.use("/api",              miscRoutes);  
 
-// ── Error handler — must always be last ──────────────────────────────────────
 app.use(errorMiddleware);
 
 app.get("/debug", (req, res) => {

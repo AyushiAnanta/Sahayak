@@ -7,7 +7,6 @@ export const googleCallback = asyncHandler(async (req, res) => {
 
   const { accessToken, refreshToken } = generateTokens(user);
 
-  // (optional) still keep cookies if you want
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
     secure: false,
@@ -24,7 +23,6 @@ export const googleCallback = asyncHandler(async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
-  // ✅ CRITICAL: send token + role to frontend
   return res.redirect(
   `http://localhost:5173/google-success?token=${accessToken}&role=${user.role || "user"}`
 );

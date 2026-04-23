@@ -7,7 +7,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEmailNotification } from "../utils/email.js";
 
-// GET /api/admin/grievances — returns all grievances in the system with optional filters
 export const getAllGrievances = asyncHandler(async (req, res) => {
   const { status, category, district, page = 1, limit = 20 } = req.query;
 
@@ -30,7 +29,6 @@ export const getAllGrievances = asyncHandler(async (req, res) => {
 });
 
 
-// GET /api/admin/grievances/pending — returns all grievances with status pending or in_progress
 export const getPendingGrievances = asyncHandler(async (req, res) => {
   const grievances = await Grievance.find({
     status: { $in: ["pending", "in_progress"] },
@@ -44,7 +42,6 @@ export const getPendingGrievances = asyncHandler(async (req, res) => {
 });
 
 
-// PUT /api/admin/assign/:id — assigns a grievance to a department and/or officer, moves status to in_progress
 export const assignGrievance = asyncHandler(async (req, res) => {
   const { departmentId, officerId } = req.body;
   if (!departmentId) throw new ApiError(400, "departmentId is required");
@@ -60,7 +57,6 @@ export const assignGrievance = asyncHandler(async (req, res) => {
 
   await grievance.save();
 
-  // Log the status change
   await StatusLog.create({
     grievanceId: grievance._id,
     userId: grievance.userId,
@@ -70,7 +66,6 @@ export const assignGrievance = asyncHandler(async (req, res) => {
     remark: `Assigned to department ${departmentId}${officerId ? `, officer ${officerId}` : ""}`,
   });
 
-  // Notify the user
   await Notification.create({
     userId: grievance.userId,
     grievanceId: grievance._id,
@@ -97,7 +92,6 @@ export const assignGrievance = asyncHandler(async (req, res) => {
   
 
 
-// PUT /api/admin/status/:id — force-updates the status of any grievance and logs the change
 export const updateGrievanceStatus = asyncHandler(async (req, res) => {
   const { status, remark } = req.body;
   const validStatuses = ["pending", "in_progress", "resolved", "rejected"];
@@ -113,7 +107,6 @@ export const updateGrievanceStatus = asyncHandler(async (req, res) => {
   grievance.status = status;
   await grievance.save();
 
-  // Log the status change for audit trail
   await StatusLog.create({
     grievanceId: grievance._id,
     userId: grievance.userId,
@@ -123,7 +116,6 @@ export const updateGrievanceStatus = asyncHandler(async (req, res) => {
     remark: remark || "",
   });
 
-  // Map status to notification_type enum
   const typeMap = {
     in_progress: "Under Process",
     resolved: "Completed",
@@ -155,7 +147,6 @@ export const updateGrievanceStatus = asyncHandler(async (req, res) => {
 });
 
 
-// GET /api/admin/stats/monthly — returns monthly complaint counts, category breakdown, and status distribution
 export const getMonthlyStats = asyncHandler(async (req, res) => {
   const monthly = await Grievance.aggregate([
     { $match: { is_deleted: false } },
@@ -185,7 +176,6 @@ export const getMonthlyStats = asyncHandler(async (req, res) => {
 });
 
 
-// GET /api/admin/notifications — fetches all notifications in the system (admin view)
 export const getAdminNotifications = asyncHandler(async (req, res) => {
   const notifications = await Notification.find()
     .sort({ createdAt: -1 })
@@ -196,7 +186,6 @@ export const getAdminNotifications = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, notifications));
 });
 
-// GET /api/admin/stats/users — returns total users and officers count
 export const getUserStats = asyncHandler(async (req, res) => {
   const [totalUsers, totalOfficers] = await Promise.all([
     User.countDocuments({ role: "user", }),

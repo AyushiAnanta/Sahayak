@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { t, i18n } = useTranslation(); // ✅ ADDED
+  const { t, i18n } = useTranslation(); 
 
   const [grievances, setGrievances] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,7 +14,6 @@ const Dashboard = () => {
 
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // ✅ RTL support (for Urdu)
   useEffect(() => {
     document.body.dir = i18n.language === "ur" ? "rtl" : "ltr";
   }, [i18n.language]);
@@ -145,7 +144,7 @@ const Dashboard = () => {
                   </h3>
 
                   <p className="text-sm text-gray-400 mt-2">
-                    {t("category")}: {g.category || "N/A"}
+                   {t("category")}: {g.category ? t(g.category) : t("na")}
                   </p>
 
                   <p className="text-sm mt-1">

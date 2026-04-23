@@ -20,7 +20,7 @@ const AuthLayout = ({ children, showBranding = true }) => {
 
       <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center">
 
-        {/* 🔹 Branding */}
+        {/* Branding */}
         {showBranding && (
           <div className="hidden lg:flex flex-col justify-center items-center gap-8">
             <h1 className="text-7xl font-bold text-[#ffe6a7]">
@@ -33,7 +33,7 @@ const AuthLayout = ({ children, showBranding = true }) => {
           </div>
         )}
 
-        {/* 🔹 Form Section */}
+        {/* Form Section */}
         <div className="w-full flex justify-center">
           {children}
         </div>

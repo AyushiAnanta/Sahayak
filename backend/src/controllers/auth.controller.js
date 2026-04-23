@@ -5,19 +5,17 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { generateTokens } from "../utils/token.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-
-// REGISTER USER — creates a new account, does not log in
 export const registerUser = asyncHandler(async (req, res) => {
   const { username, name, email, password, role, departmentId} = req.body;
 
   console.log("📝 REGISTER REQUEST:", req.body);
 
-  // ✅ VALIDATION
+  // VALIDATION
   if (!username || !email || !password || !name) {
     throw new ApiError(400, "All fields are required");
   }
 
-  // ✅ CHECK EXISTING USERS
+  // CHECK EXISTING USERS
   const existingEmail = await User.findOne({ email });
   if (existingEmail) {
     console.log("❌ Email already exists");
@@ -30,7 +28,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "Username not available");
   }
 
-  // ✅ ROLE CONTROL (VERY IMPORTANT)
+  // ROLE CONTROL
   const allowedRoles = ["user", "officer", "department"]; 
   const finalRole = allowedRoles.includes(role) ? role : "user";
   if ((finalRole === "officer" || finalRole === "department") && !departmentId) {
@@ -61,7 +59,6 @@ export const registerUser = asyncHandler(async (req, res) => {
 });
 
 
-// LOGIN USER — validates credentials, saves tokens to DB, sets httpOnly cookies
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, username, password } = req.body;
 
@@ -100,7 +97,7 @@ export const loginUser = asyncHandler(async (req, res) => {
   await User.findByIdAndUpdate(
     user._id,
     { $set: { refreshToken } },
-    { returnDocument: "after" } // ✅ FIX deprecated warning
+    { returnDocument: "after" } 
   );
 
   const cookieOptions = {
@@ -122,7 +119,6 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   console.log("🚀 LOGIN SUCCESS:", { id: user._id, role: user.role });
 
-  // ✅ CLEAN RESPONSE
   return res.status(200).json({
     success: true,
     user: {
@@ -131,18 +127,16 @@ export const loginUser = asyncHandler(async (req, res) => {
       email: user.email,
       username: user.username,
       role: user.role,
-      departmentId: user.departmentId || null, // ✅ add this
+      departmentId: user.departmentId || null, 
     },
     message: "Login successful",
   });
 });
 
-// LOGOUT — clears refreshToken from DB and clears both cookies
 export const logoutUser = asyncHandler(async (req, res) => {
   const userId = req.user?._id;
   if (!userId) throw new ApiError(401, "Not authenticated");
 
-  // Wipe refreshToken from DB
   await User.findByIdAndUpdate(
     userId,
     { $set: { refreshToken: "" } },
@@ -164,13 +158,11 @@ export const logoutUser = asyncHandler(async (req, res) => {
 });
 
 
-// CURRENT USER — returns the user object attached by verifyJWT middleware
 export const getCurrentUser = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, req.user));
 });
 
 
-// REFRESH ACCESS TOKEN — issues a new accessToken using the refreshToken cookie
 export const refreshAccessToken = asyncHandler(async (req, res) => {
   const incomingRefreshToken = req.cookies?.refreshToken;
   if (!incomingRefreshToken) throw new ApiError(401, "Refresh token missing");
@@ -182,7 +174,6 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid or expired refresh token");
   }
 
-  // Fetch user and explicitly select refreshToken since it is select:false
   const user = await User.findById(decoded._id).select("+refreshToken");
   if (!user) throw new ApiError(404, "User not found");
 

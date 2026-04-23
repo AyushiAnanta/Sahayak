@@ -4,14 +4,14 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 
-// POST /api/comment/:grievanceId — adds a new comment to a grievance thread
+// POST /api/comment/:grievanceId
 export const addComment = asyncHandler(async (req, res) => {
   const { content } = req.body;
   if (!content) throw new ApiError(400, "Content is required");
 
   const comment = await Comment.create({
     content,
-    grievance_id: req.params.grievanceId,   // model field is grievance_id
+    grievance_id: req.params.grievanceId,   
     userId: req.user._id,
     is_deleted: false,
   });
@@ -20,7 +20,7 @@ export const addComment = asyncHandler(async (req, res) => {
 });
 
 
-// GET /api/comment/:grievanceId — fetches all non-deleted comments for a grievance
+// GET /api/comment/:grievanceId 
 export const getComments = asyncHandler(async (req, res) => {
   const comments = await Comment.find({
     grievance_id: req.params.grievanceId,
@@ -33,7 +33,7 @@ export const getComments = asyncHandler(async (req, res) => {
 });
 
 
-// DELETE /api/comment/:commentId — soft deletes a comment by setting is_deleted = true
+// DELETE /api/comment/:commentId 
 export const deleteComment = asyncHandler(async (req, res) => {
   const comment = await Comment.findOne({
     _id: req.params.commentId,
@@ -50,7 +50,7 @@ export const deleteComment = asyncHandler(async (req, res) => {
 });
 
 
-// GET /api/comment/single/:commentId — fetches a single comment by its id
+// GET /api/comment/single/:commentId 
 export const getCommentById = asyncHandler(async (req, res) => {
   const comment = await Comment.findOne({
     _id: req.params.commentId,

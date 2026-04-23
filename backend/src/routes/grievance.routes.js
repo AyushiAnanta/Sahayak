@@ -13,7 +13,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 
 const router = Router();
 
-router.use(verifyJWT); // all grievance routes require login
+router.use(verifyJWT); 
 
 router.post("/create",          createGrievance);
 router.get("/all",              getUserGrievances);

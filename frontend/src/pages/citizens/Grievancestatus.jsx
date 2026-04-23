@@ -4,8 +4,9 @@ import { getGrievanceById } from "../../api/grievance";
 import { getComments, addComment, deleteComment } from "../../api/comment";
 import { getFeedback, submitFeedback } from "../../api/feedback";
 import Navbar from "../../components/Navbar";
+import { useTranslation } from "react-i18next";
 
-// ── STATUS CONFIG ────────────────────────────────────────────────────────────
+// STATUS CONFIG 
 const STATUS_CONFIG = {
   pending: {
     label: "Pending",
@@ -37,23 +38,29 @@ const STATUS_CONFIG = {
   },
 };
 
-// ── PRIORITY BADGE ───────────────────────────────────────────────────────────
+// PRIORITY BADGE 
 const PriorityBadge = ({ score }) => {
-  if (score == null) return <span className="text-gray-500">N/A</span>;
+  const { t } = useTranslation();
+  if (score == null) return <span className="text-gray-500">{t("na")}</span>;
+
   const level =
-    score >= 8 ? { label: "Critical", color: "text-red-400 bg-red-500/10 border-red-500/30" }
-    : score >= 5 ? { label: "High", color: "text-orange-400 bg-orange-500/10 border-orange-500/30" }
-    : score >= 3 ? { label: "Medium", color: "text-yellow-400 bg-yellow-500/10 border-yellow-500/30" }
-    : { label: "Low", color: "text-green-400 bg-green-500/10 border-green-500/30" };
+    score >= 8
+      ? { label: "critical", color: "text-red-400 bg-red-500/10 border-red-500/30" }
+      : score >= 5
+      ? { label: "high", color: "text-orange-400 bg-orange-500/10 border-orange-500/30" }
+      : score >= 3
+      ? { label: "medium", color: "text-yellow-400 bg-yellow-500/10 border-yellow-500/30" }
+      : { label: "low", color: "text-green-400 bg-green-500/10 border-green-500/30" };
 
   return (
     <span className={`px-2 py-0.5 rounded-full text-xs font-semibold border ${level.color}`}>
-      {level.label} ({score})
+      {t(level.label)} ({score})
     </span>
   );
 };
 
-// ── STAR RATING ──────────────────────────────────────────────────────────────
+
+//  STAR RATING 
 const StarRating = ({ value, onChange, readonly = false }) => (
   <div className="flex gap-1">
     {[1, 2, 3, 4, 5].map((s) => (
@@ -61,7 +68,7 @@ const StarRating = ({ value, onChange, readonly = false }) => (
         key={s}
         type="button"
         onClick={() => !readonly && onChange && onChange(s)}
-        className={`text-2xl transition-transform ${!readonly ? "hover:scale-110 cursor-pointer" : "cursor-default"} ${
+        className={`text-2xl ${!readonly ? "hover:scale-110 cursor-pointer" : ""} ${
           s <= value ? "text-yellow-400" : "text-gray-600"
         }`}
       >
@@ -71,9 +78,10 @@ const StarRating = ({ value, onChange, readonly = false }) => (
   </div>
 );
 
-// ── SECTION CARD ─────────────────────────────────────────────────────────────
+
+//SECTION CARD 
 const Section = ({ title, icon, children }) => (
-  <div className="bg-[#2a2a2f] border border-gray-700/60 rounded-2xl p-6 shadow-lg">
+  <div className="bg-[#2a2a2f] border border-gray-700/60 rounded-2xl p-6">
     <h3 className="text-[#e8d4a2] font-semibold text-lg mb-5 flex items-center gap-2">
       <span>{icon}</span> {title}
     </h3>
@@ -81,18 +89,15 @@ const Section = ({ title, icon, children }) => (
   </div>
 );
 
-// ── FIELD ROW ────────────────────────────────────────────────────────────────
+// FIELD 
 const Field = ({ label, children }) => (
   <div>
-    <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">{label}</p>
+    <p className="text-xs text-gray-500 uppercase mb-1">{label}</p>
     <div className="text-gray-200 text-sm">{children}</div>
   </div>
 );
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
 const GrievanceStatus = () => {
+  const { t } = useTranslation();  
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const grievanceId = searchParams.get("id");
@@ -118,13 +123,13 @@ const GrievanceStatus = () => {
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
-  // ── FETCH ALL DATA ─────────────────────────────────────────────────────────
   useEffect(() => {
     if (!grievanceId) {
-      setError("No grievance ID provided.");
+      setError(t("noGrievanceId"));
       setLoading(false);
       return;
-    }
+    } 
+    
 
     const fetchAll = async () => {
       try {
@@ -136,7 +141,6 @@ const GrievanceStatus = () => {
         setGrievance(gRes?.data?.data || gRes?.data);
         setComments(cRes?.data?.data || cRes?.data || []);
 
-        // Feedback may not exist yet — ignore 404
         try {
           const fRes = await getFeedback(grievanceId);
           const fb = fRes?.data?.data || fRes?.data;
@@ -155,7 +159,7 @@ const GrievanceStatus = () => {
     fetchAll();
   }, [grievanceId]);
 
-  // ── ADD COMMENT ────────────────────────────────────────────────────────────
+  // ADD COMMENT
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
     try {
@@ -171,7 +175,7 @@ const GrievanceStatus = () => {
     }
   };
 
-  // ── DELETE COMMENT ─────────────────────────────────────────────────────────
+  //  DELETE COMMENT 
   const handleDeleteComment = async (commentId) => {
     if (!window.confirm("Delete this comment?")) return;
     try {
@@ -182,10 +186,10 @@ const GrievanceStatus = () => {
     }
   };
 
-  // ── SUBMIT FEEDBACK ────────────────────────────────────────────────────────
+  //SUBMIT FEEDBACK
   const handleSubmitFeedback = async () => {
     if (feedbackForm.rating === 0) {
-      alert("Please give a star rating before submitting.");
+      alert(t("giveRating"));
       return;
     }
     try {
@@ -200,10 +204,10 @@ const GrievanceStatus = () => {
     }
   };
 
-  // ── STATUS CONFIG HELPERS ──────────────────────────────────────────────────
+  // STATUS CONFIG HELPERS
   const statusCfg = STATUS_CONFIG[grievance?.status] || STATUS_CONFIG["pending"];
 
-  // ── RENDER ─────────────────────────────────────────────────────────────────
+  //  RENDER
   return (
     <div className="min-h-screen bg-[#1f1f23] text-white">
       <Navbar
@@ -240,7 +244,7 @@ const GrievanceStatus = () => {
         {!loading && grievance && (
           <div className="space-y-6">
 
-            {/* ── COMPLAINT CARD ───────────────────────────────────────────── */}
+            {/*COMPLAINT CARD*/}
             <div className={`bg-[#2a2a2f] border rounded-2xl p-7 shadow-xl ${statusCfg.bg}`}>
 
               {/* Header row */}
@@ -302,7 +306,7 @@ const GrievanceStatus = () => {
                 </Field>
 
                 <Field label="Priority">
-                  <PriorityBadge score={grievance.priorityScore} />
+                  <PriorityBadge score={grievance.priorityScore} t={t} />
                 </Field>
 
                 <Field label="District">
@@ -390,7 +394,7 @@ const GrievanceStatus = () => {
               )}
             </div>
 
-            {/* ── COMMENTS SECTION ─────────────────────────────────────────── */}
+            {/* COMMENTS SECTION  */}
             <Section title="Comments" icon="💬">
 
               {/* Existing comments */}
@@ -467,7 +471,7 @@ const GrievanceStatus = () => {
               </div>
             </Section>
 
-            {/* ── FEEDBACK SECTION ─────────────────────────────────────────── */}
+            {/* FEEDBACK SECTION */}
             <Section title="Feedback" icon="⭐">
 
               {feedbackSubmitted && feedback ? (

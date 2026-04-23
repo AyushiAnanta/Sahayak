@@ -3,7 +3,6 @@ from deep_translator import GoogleTranslator
 
 DetectorFactory.seed = 0
 
-# deep-translator needs full language names not codes
 LANGUAGE_NAMES = {
     "en": "english",
     "hi": "hindi",
@@ -24,8 +23,6 @@ def detect_and_translate(text: str, target_language: str = "en") -> dict:
     except Exception:
         detected = "en"
 
-    # ✅ Don't skip — always attempt translation if text isn't ASCII
-    # langdetect wrongly returns "en" for short Hindi/regional text
     is_likely_non_english = not all(ord(c) < 128 for c in text.replace(" ", ""))
     
     if detected == target_language and not is_likely_non_english:

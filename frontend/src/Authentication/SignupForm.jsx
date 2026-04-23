@@ -18,7 +18,6 @@ const SignupForm = ({ switchToLogin }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // ✅ RTL support
   useEffect(() => {
     document.body.dir = i18n.language === "ur" ? "rtl" : "ltr";
   }, [i18n.language]);

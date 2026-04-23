@@ -18,6 +18,6 @@ export const markInProgress = (id, remark = "") =>
 export const completeTask = (id, remark = "") =>
   API.put(`/officer/tasks/${id}/complete`, { remark });
 
-// GET department info (for profile page)
+// GET department info 
 export const getDepartmentById = (id) =>
   API.get(`/department/${id}`);

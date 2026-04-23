@@ -116,7 +116,6 @@ function StatusLogModal({ grievanceId, onClose }) {
   );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
 export default function GrievanceReports() {
   const [grievances, setGrievances] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -124,7 +123,7 @@ export default function GrievanceReports() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
-  const [logGrievanceId, setLogGrievanceId] = useState(null); // which grievance's log to show
+  const [logGrievanceId, setLogGrievanceId] = useState(null); 
 
   useEffect(() => {
     const load = async () => {

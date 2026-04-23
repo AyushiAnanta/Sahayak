@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next"; // ✅ IMPORTANT
+import { useTranslation } from "react-i18next";
 
 const Navbar = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t, i18n } = useTranslation(); // ✅ ADD THIS
+  const { t, i18n } = useTranslation();
 
   const [open, setOpen] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -45,7 +45,7 @@ const Navbar = ({ user, onLogout }) => {
     location.pathname === path ? "text-white font-semibold" : "text-gray-300";
 
   return (
-    <div key={i18n.language}> {/* ✅ FORCE RE-RENDER */}
+    <div key={i18n.language}> {/* FORCE RE-RENDER */}
 
       <nav className="fixed top-0 left-0 w-full z-50 bg-[#1f1f23]/80 backdrop-blur-md border-b border-gray-700 px-10 py-4 flex justify-between items-center">
 
@@ -99,7 +99,7 @@ const Navbar = ({ user, onLogout }) => {
                     <button
                       key={lang.code}
                       onClick={async () => {
-                        await i18n.changeLanguage(lang.code); // 🔥 MAIN FIX
+                        await i18n.changeLanguage(lang.code); 
 
                         setSelectedLang(lang.code);
                         localStorage.setItem("lang", lang.code);

@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 
-// ── Transporter — reused across all email sends ───────────────────────────────
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -9,7 +8,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// ── Email templates per notification type ────────────────────────────────────
+//  Email templates per notification type
 const getEmailTemplate = (notification_type, message, grievanceId, district) => {
   const typeConfig = {
     Initiated: {
@@ -125,7 +124,7 @@ const getEmailTemplate = (notification_type, message, grievanceId, district) => 
   };
 };
 
-// ── Main send function ────────────────────────────────────────────────────────
+//  Main send function 
 export const sendEmailNotification = async ({
   toEmail,
   toName,
@@ -157,7 +156,6 @@ export const sendEmailNotification = async ({
     console.log(`[email] Sent to ${toEmail} | MessageId: ${info.messageId}`);
     return info;
   } catch (err) {
-    // Non-fatal — log but don't crash the main flow
     console.error(`[email] Failed to send to ${toEmail}:`, err.message);
   }
 };

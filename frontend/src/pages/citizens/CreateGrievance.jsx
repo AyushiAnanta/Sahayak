@@ -4,41 +4,39 @@ import {
   createGrievance,
   uploadGrievanceFile,
 } from "../../api/grievance";
-
+import { useTranslation } from "react-i18next"; 
 import Navbar from "../../components/Navbar";
 
-const LANGUAGES = [
-  { label: "English", value: "en" },
-  { label: "Hindi", value: "hi" },
-  { label: "Punjabi", value: "pa" },
-  { label: "Bengali", value: "bn" },
-  { label: "Marathi", value: "mr" },
-];
 
 const LANG_TO_RECOGNITION = {
   en: "en-IN",
   hi: "hi-IN",
-  pa: "pa-IN",
   bn: "bn-IN",
   mr: "mr-IN",
 };
 
-// Categories match department category_handled values exactly.
-// Subcategories are common complaint types within each domain.
 const CATEGORY_MAP = {
-  Agriculture: ["Crop Damage", "Irrigation Issue", "Fertilizer Supply", "Pest Control", "Other"],
-  ConsumerAffairs: ["Overcharging", "Defective Product", "False Advertisement", "Refund Issue", "Other"],
-  Education: ["School Infrastructure", "Teacher Absence", "Scholarship", "Mid-Day Meal", "Other"],
-  Electricity: ["Power Cut", "Street Light", "Bill Issue", "Meter Fault", "Other"],
-  Food: ["Ration Card", "PDS Supply", "Food Quality", "Distribution Delay", "Other"],
-  General: ["General Complaint", "Information Request", "Other"],
-  Healthcare: ["Hospital Service", "Medicine Availability", "Ambulance", "Sanitation", "Other"],
-  Labour: ["Wage Dispute", "Workplace Safety", "Employment", "Child Labour", "Other"],
-  Road: ["Potholes", "Construction Delay", "Road Damage", "Signage", "Other"],
-  Water: ["No Supply", "Leakage", "Dirty Water", "Pipeline Repair", "Other"],
+  Agriculture: ["cropDamage", "irrigationIssue", "fertilizerSupply", "pestControl", "other"],
+  ConsumerAffairs: ["overcharging", "defectiveProduct", "falseAdvertisement", "refundIssue", "other"],
+  Education: ["schoolInfrastructure", "teacherAbsence", "scholarship", "midDayMeal", "other"],
+  Electricity: ["powerCut", "streetLight", "billIssue", "meterFault", "other"],
+  Food: ["rationCard", "pdsSupply", "foodQuality", "distributionDelay", "other"],
+  General: ["generalComplaint", "informationRequest", "other"],
+  Healthcare: ["hospitalService", "medicineAvailability", "ambulance", "sanitation", "other"],
+  Labour: ["wageDispute", "workplaceSafety", "employment", "childLabour", "other"],
+  Road: ["potholes", "constructionDelay", "roadDamage", "signage", "other"],
+  Water: ["noSupply", "leakage", "dirtyWater", "pipelineRepair", "other"],
 };
-
 const CreateGrievance = () => {
+  const { t, i18n } = useTranslation();
+const LANGUAGES = [
+  
+  { label: t("english"), value: "en" },
+  { label: t("hindi"), value: "hi" },
+  { label: t("bengali"), value: "bn" },
+  { label: t("marathi"), value: "mr" },
+];
+
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
   const recognitionRef = useRef(null);
@@ -62,8 +60,6 @@ const CreateGrievance = () => {
   const [recording, setRecording] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // ─── SPEECH ──────────────────────────────────────────────────────────────
 
   const startListening = () => {
     const SpeechRecognition =
@@ -114,7 +110,6 @@ const CreateGrievance = () => {
     setRecording(false);
   };
 
-  // ─── FILE HANDLER ─────────────────────────────────────────────────────────
 
   const handleFile = async (file) => {
     setForm((prev) => ({ ...prev, file }));
@@ -155,7 +150,6 @@ const CreateGrievance = () => {
     setError("");
   };
 
-  // ─── SUBMIT ───────────────────────────────────────────────────────────────
 
   const handleSubmit = async () => {
     if (!form.district || !form.pincode) {
@@ -202,8 +196,6 @@ const CreateGrievance = () => {
     }
   };
 
-  // ─── RENDER ──────────────────────────────────────────────────────────────
-
   return (
     <div className="min-h-screen bg-[#1f1f23] text-white">
       <Navbar
@@ -216,7 +208,7 @@ const CreateGrievance = () => {
 
       <div className="pt-24 max-w-4xl mx-auto p-6">
         <h1 className="text-3xl font-bold text-[#e8d4a2] mb-6">
-          Create Grievance
+          {t("createGrievance")}
         </h1>
 
         <div className="bg-[#2a2a2f] p-8 rounded-xl shadow-lg">
@@ -228,10 +220,10 @@ const CreateGrievance = () => {
             onChange={handleChange}
             className="w-full p-3 mb-6 bg-[#1f1f23] border border-gray-600 rounded-lg"
           >
-            <option value="text">Text</option>
-            <option value="audio">Audio</option>
-            <option value="image">Image</option>
-            <option value="pdf">PDF</option>
+            <option value="text">{t("text")}</option>
+            <option value="audio">{t("audio")}</option>
+            <option value="image">{t("image")}</option>
+            <option value="pdf">{t("pdf")}</option>
           </select>
 
           {/* TEXT INPUT */}
@@ -239,7 +231,7 @@ const CreateGrievance = () => {
             <textarea
               name="originalText"
               rows="4"
-              placeholder="Describe your issue..."
+              placeholder={t("descriptionPlaceholder")}
               value={form.originalText}
               className="w-full p-4 mb-6 bg-[#1f1f23] border border-gray-600 rounded-lg"
               onChange={handleChange}
@@ -254,7 +246,7 @@ const CreateGrievance = () => {
                   name="originalText"
                   value={form.originalText}
                   onChange={handleChange}
-                  placeholder="Speak or type your complaint..."
+                 placeholder={t("speakOrTypeComplaint")}
                   rows={4}
                   className="w-full p-4 pr-16 bg-[#1f1f23] border border-gray-600 rounded-2xl focus:outline-none focus:border-[#6c584c] resize-none"
                 />
@@ -271,13 +263,15 @@ const CreateGrievance = () => {
                   🎤
                 </button>
               </div>
-              <p className="text-xs text-gray-400 mt-2">
-                {recording
-                  ? `🔴 Listening in ${
-                      LANGUAGES.find((l) => l.value === form.originalLanguage)?.label ?? "selected language"
-                    }… tap mic to stop`
-                  : "Select language below, then tap mic to speak"}
-              </p>
+            <p className="text-xs text-gray-400 mt-2">
+            {recording
+              ? t("listening", {
+                  language:
+                    LANGUAGES.find((l) => l.value === form.originalLanguage)?.label ||
+                    t("selectedLanguage"),
+                })
+              : t("selectLanguageInstruction")}
+          </p>
             </div>
           )}
 
@@ -293,10 +287,11 @@ const CreateGrievance = () => {
                 className="border-2 border-dashed border-gray-600 p-6 rounded-xl text-center"
               >
                 {uploadingFile ? (
-                  <p className="text-yellow-400">⏳ Uploading & extracting text…</p>
+                  <p className="text-yellow-400">⏳ {t("uploadingExtracting")}</p>
                 ) : (
                   <>
-                    Drag & Drop or
+                       {t("dragDropOr")}
+
                     <input
                       type="file"
                       hidden
@@ -305,7 +300,7 @@ const CreateGrievance = () => {
                       onChange={(e) => handleFile(e.target.files[0])}
                     />
                     <label htmlFor="fileUpload" className="underline ml-2 cursor-pointer">
-                      Select File
+                       {t("selectFile")}
                     </label>
                     {form.file && (
                       <p className="text-green-400 mt-2">{form.file.name}</p>
@@ -317,7 +312,7 @@ const CreateGrievance = () => {
               {form.originalText ? (
                 <div className="mt-4">
                   <p className="text-xs text-gray-400 mb-1">
-                    ✅ Text extracted from file — review and edit if needed:
+                    ✅ {t("textExtracted")}
                   </p>
                   <textarea
                     name="originalText"
@@ -330,12 +325,12 @@ const CreateGrievance = () => {
               ) : form.file && !uploadingFile ? (
                 <div className="mt-4">
                   <p className="text-xs text-yellow-400 mb-1">
-                    ⚠️ Could not extract text automatically. Please type your complaint:
+                   {t("textExtractionFailed")}
                   </p>
                   <textarea
                     name="originalText"
                     rows="4"
-                    placeholder="Type your complaint here..."
+                    placeholder={t("typeComplaint")}
                     value={form.originalText}
                     onChange={handleChange}
                     className="w-full p-4 bg-[#1f1f23] border border-gray-600 rounded-lg"
@@ -350,7 +345,9 @@ const CreateGrievance = () => {
             <select
               name="originalLanguage"
               value={form.originalLanguage}
-              onChange={handleChange}
+              onChange={(e) => {
+    handleChange(e);
+    i18n.changeLanguage(e.target.value); }}
               className="p-3 bg-[#1f1f23] border border-gray-600 rounded-lg"
             >
               {LANGUAGES.map((l) => (
@@ -364,10 +361,13 @@ const CreateGrievance = () => {
               onChange={handleChange}
               className="p-3 bg-[#1f1f23] border border-gray-600 rounded-lg"
             >
-              <option value="">Category</option>
-              {Object.keys(CATEGORY_MAP).map((c) => (
-                <option key={c} value={c}>{c}</option>
-              ))}
+              <option value="">{t("category")}</option>
+
+            {Object.keys(CATEGORY_MAP).map((c) => (
+              <option key={c} value={c}>
+                {t(c)}
+              </option>
+            ))}
             </select>
 
             <select
@@ -377,23 +377,26 @@ const CreateGrievance = () => {
               disabled={!form.category}
               className="p-3 bg-[#1f1f23] border border-gray-600 rounded-lg disabled:opacity-50"
             >
-              <option value="">SubCategory</option>
-              {form.category &&
-                CATEGORY_MAP[form.category].map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
+          <option value="">{t("subCategory")}</option>
+
+          {form.category &&
+            CATEGORY_MAP[form.category].map((s) => (
+              <option key={s} value={s}>
+                {t(s)}
+              </option>
+            ))}
             </select>
 
             <input
               name="district"
-              placeholder="District"
+              placeholder={t("district")}
               className="p-3 bg-[#1f1f23] border border-gray-600 rounded-lg"
               onChange={handleChange}
             />
 
             <input
               name="pincode"
-              placeholder="Pincode"
+              placeholder={t("pincode")}
               maxLength={6}
               inputMode="numeric"
               className="p-3 bg-[#1f1f23] border border-gray-600 rounded-lg"
@@ -415,9 +418,9 @@ const CreateGrievance = () => {
           >
             <p className="text-3xl mb-2">📁</p>
             <p className="text-lg font-medium text-gray-300">
-              Drag & drop your proof image here
+               {t("dragDropProof")}
             </p>
-            <p className="text-sm text-gray-500 mt-1 mb-3">or</p>
+            <p className="text-sm text-gray-500 mt-1 mb-3"> {t("or")}</p>
             <input
               type="file"
               hidden
@@ -429,7 +432,7 @@ const CreateGrievance = () => {
               htmlFor="proofUpload"
               className="inline-block px-4 py-2 bg-[#6c584c] text-white rounded-lg cursor-pointer hover:opacity-90 transition"
             >
-              Select Image
+              {t("selectImage")}
             </label>
             {form.proofImage && (
               <p className="text-green-400 mt-3 text-sm">✓ {form.proofImage.name}</p>
@@ -443,7 +446,8 @@ const CreateGrievance = () => {
             disabled={loading || uploadingFile}
             className="w-full mt-6 bg-[#6c584c] py-3 rounded-lg disabled:opacity-60 hover:opacity-90 transition"
           >
-            {loading ? "Submitting..." : uploadingFile ? "Processing file…" : "Submit"}
+            {loading
+  ? t("submitting"): uploadingFile ? t("processingFile"): t("submit")}
           </button>
         </div>
       </div>

@@ -18,11 +18,6 @@ import {
 } from "./ai.controller.js";
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /api/grievance/upload
-// Uploads file → OCR → translate → returns pre-filled data to frontend
-// Frontend uses this to pre-fill the grievance form before user submits
-// ─────────────────────────────────────────────────────────────────────────────
 export const uploadGrievanceFile = asyncHandler(async (req, res) => {
   console.log("hereeeeeeeee")
   const localPath = req.file?.path;
@@ -31,15 +26,12 @@ export const uploadGrievanceFile = asyncHandler(async (req, res) => {
   const extension = req.file.originalname.split(".").pop().toLowerCase();
   const inputType = extension === "pdf" ? "pdf" : "image";
 
-  // ✅ Step 1 — Run OCR FIRST
   const extractedText = await runOCR(localPath, req.file.originalname, req.file.mimetype);
   console.log(`[upload] OCR extracted ${extractedText.length} chars`);
 
-  // ✅ Step 2 — Upload to Cloudinary
   const uploaded = await uploadOnCloudinary(localPath);
   if (!uploaded) throw new ApiError(500, "Cloudinary upload failed");
 
-  // Step 3 — Translate
   let translatedText = extractedText;
   let detectedLanguage = "en";
 
@@ -49,7 +41,6 @@ export const uploadGrievanceFile = asyncHandler(async (req, res) => {
     detectedLanguage = translated.detectedLanguage;
   }
 
-  // Cleanup
   try { if (fs.existsSync(localPath)) fs.unlinkSync(localPath); } catch (_) {}
 
   return res.status(200).json(new ApiResponse(200, {
@@ -61,21 +52,16 @@ export const uploadGrievanceFile = asyncHandler(async (req, res) => {
   }, "File uploaded and processed"));
 });
 
-
-// ─────────────────────────────────────────────────────────────────────────────
-// POST /api/grievance/create
-// Creates grievance → auto-runs full AI pipeline → saves everything to DB
-// ─────────────────────────────────────────────────────────────────────────────
 export const createGrievance = asyncHandler(async (req, res) => {
   const {
     inputType,
     originalText,
     originalLanguage,
-    translatedText,   // if coming from upload flow, frontend passes this directly
+    translatedText,  
     district,
     pincode,
-    input_url,        // cloudinary URL from upload step (optional)
-    preferredLanguage, // user's language for the explanation e.g. "hi"
+    input_url,   
+    preferredLanguage, 
   } = req.body;
 
   if (!inputType || !originalText || !district || !pincode) {
@@ -84,7 +70,6 @@ export const createGrievance = asyncHandler(async (req, res) => {
 
   const startTime = Date.now();
 
-  // ── Step 1: Translate if not already done (text submissions) ────────────────
   let finalTranslatedText = translatedText;
   let finalOriginalLanguage = originalLanguage;
 
@@ -94,15 +79,12 @@ export const createGrievance = asyncHandler(async (req, res) => {
     finalOriginalLanguage = translated.detectedLanguage;
   }
 
-  // ── Step 2: Classify the translated text ────────────────────────────────────
   const classification = await runClassify(finalTranslatedText);
   console.log(`[create] Classified as: ${classification.category} (${classification.subCategory})`);
 
-  // ── Step 3: Generate user-language explanation ───────────────────────────────
   const userLang = preferredLanguage || finalOriginalLanguage || "en";
   const summaryUserLang = await runExplain(finalTranslatedText, userLang);
 
-  // ── Step 4: Save grievance to DB with all AI fields populated ───────────────
   const grievance = await Grievance.create({
     userId: req.user._id,
     inputType,
@@ -114,7 +96,6 @@ export const createGrievance = asyncHandler(async (req, res) => {
     pincode,
     status: "pending",
     is_deleted: false,
-    // AI fields — all populated automatically
     category: classification.category,
     subCategory: classification.subCategory,
     keywords: classification.keywords,
@@ -123,14 +104,11 @@ export const createGrievance = asyncHandler(async (req, res) => {
     summaryUserLang,
   });
 
-  // ── Step 5: Duplicate check — done after saving so we have the grievanceId ──
   const duplicateResult = await runDuplicateCheck(grievance._id.toString(), finalTranslatedText);
   if (duplicateResult.isDuplicate) {
     console.log(`[create] Duplicate detected — similar to: ${duplicateResult.similarGrievances.map(g => g.id).join(", ")}`);
-    // We still save it — admin can review and merge
   }
 
-  // ── Step 6: Save AI processing log for explainability ───────────────────────
   const processingTimeMs = Date.now() - startTime;
   await saveAILog({
     grievanceId: grievance._id,
@@ -148,7 +126,6 @@ export const createGrievance = asyncHandler(async (req, res) => {
     status: "Success",
   });
 
-  // ── Step 7: Notify user ──────────────────────────────────────────────────────
   await Notification.create({
     userId: req.user._id,
     grievanceId: grievance._id,
@@ -181,11 +158,7 @@ export const createGrievance = asyncHandler(async (req, res) => {
 });
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GET /api/grievance/all
-// ─────────────────────────────────────────────────────────────────────────────
 export const getUserGrievances = asyncHandler(async (req, res) => {
-  // Fetches all non-deleted grievances for the logged-in user with pagination
   const { status, page = 1, limit = 10 } = req.query;
 
   const filter = { userId: req.user._id, is_deleted: false };
@@ -203,12 +176,7 @@ export const getUserGrievances = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, { grievances, total, page: Number(page) }));
 });
 
-
-// ─────────────────────────────────────────────────────────────────────────────
-// GET /api/grievance/:id
-// ─────────────────────────────────────────────────────────────────────────────
 export const getGrievanceById = asyncHandler(async (req, res) => {
-  // Fetches a single grievance by id — must belong to the logged-in user
   const grievance = await Grievance.findOne({
     _id: req.params.id,
     userId: req.user._id,
@@ -223,11 +191,7 @@ export const getGrievanceById = asyncHandler(async (req, res) => {
 });
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PUT /api/grievance/:id/edit
-// ─────────────────────────────────────────────────────────────────────────────
 export const editGrievance = asyncHandler(async (req, res) => {
-  // Allows editing only while status is still pending — re-runs AI pipeline on edit
   const grievance = await Grievance.findOne({
     _id: req.params.id,
     userId: req.user._id,
@@ -244,7 +208,6 @@ export const editGrievance = asyncHandler(async (req, res) => {
   if (originalText) {
     grievance.originalText = originalText;
 
-    // Re-run AI pipeline since text changed
     const { translatedText, detectedLanguage } = await runTranslate(originalText, "en");
     grievance.translatedText = translatedText;
     grievance.originalLanguage = detectedLanguage;
@@ -266,11 +229,9 @@ export const editGrievance = asyncHandler(async (req, res) => {
 });
 
 
-// ─────────────────────────────────────────────────────────────────────────────
 // DELETE /api/grievance/:id
-// ─────────────────────────────────────────────────────────────────────────────
+
 export const deleteGrievance = asyncHandler(async (req, res) => {
-  // Soft deletes a grievance by setting is_deleted = true
   const grievance = await Grievance.findOne({
     _id: req.params.id,
     userId: req.user._id,
@@ -286,11 +247,8 @@ export const deleteGrievance = asyncHandler(async (req, res) => {
 });
 
 
-// ─────────────────────────────────────────────────────────────────────────────
 // GET /api/grievance/:id/status
-// ─────────────────────────────────────────────────────────────────────────────
 export const getGrievanceStatus = asyncHandler(async (req, res) => {
-  // Returns just the status field — lightweight call for status tracking page
   const grievance = await Grievance.findOne({
     _id: req.params.id,
     userId: req.user._id,
