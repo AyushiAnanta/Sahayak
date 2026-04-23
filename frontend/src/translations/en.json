@@ -180,7 +180,32 @@
    "descriptionPlaceholder": "Describe your issue...",
    "listening": " Listening in {{language}}… tap mic to stop",
   "selectLanguageInstruction": "Select language below, then tap mic to speak",
-  "selectedLanguage": "selected language"
+  "selectedLanguage": "selected language",
+  "feedbackSubmitted": "Feedback submitted",
+  "yourRating": "Your Rating",
+  "markedResolved": "Marked as Resolved",
+  "yourComment": "Your Comment",
+  "feedbackMessage": "Your complaint has been marked as resolved. Please share your feedback.",
+  "rateResolution": "Rate the resolution",
+  "issueResolved": "Was your issue actually resolved?",
+  "yesResolved": "Yes, resolved",
+  "noReopen": "No — Reopen it",
+  "reopenWarning": "Selecting 'No' will reopen your grievance.",
+  "additionalComments": "Additional Comments (optional)",
+  "additionalPlaceholder": "Any additional thoughts...",
+  "submitFeedback": "Submit Feedback",
+  "submitting": "Submitting...",
+  "feedbackAvailable": "Feedback will be available once your grievance is marked as resolved.",
+   "feedback": "Feedback",
+     "comments": "Comments",
+  "noComments": "No comments yet. Be the first to add one.",
+  "user": "User",
+    "addComment": "Add a comment...",
+  "post": "Post",
+  "posting": "Posting...",
+   "editComplaint": "Edit Complaint"
+
+
 
 
 }

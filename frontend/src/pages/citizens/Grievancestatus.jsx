@@ -388,19 +388,19 @@ const GrievanceStatus = () => {
                     }
                     className="px-4 py-2 bg-blue-600/80 hover:bg-blue-600 rounded-lg text-sm transition"
                   >
-                    ✏️ Edit Complaint
+                    ✏️ {t("editComplaint")}
                   </button>
                 </div>
               )}
             </div>
 
             {/* COMMENTS SECTION  */}
-            <Section title="Comments" icon="💬">
+            <Section title={t("comments")} icon="💬">
 
               {/* Existing comments */}
               {comments.length === 0 ? (
                 <p className="text-gray-500 text-sm">
-                  No comments yet. Be the first to add one.
+                    {t("noComments")}
                 </p>
               ) : (
                 <div className="space-y-4 mb-6">
@@ -417,7 +417,7 @@ const GrievanceStatus = () => {
                             alt=""
                           />
                           <span className="text-sm font-medium text-gray-200">
-                            {c.userId?.name || "User"}
+                           {c.userId?.name || t("user")}
                           </span>
                           {c.userId?.role && (
                             <span className="text-xs px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30">
@@ -435,7 +435,7 @@ const GrievanceStatus = () => {
                               onClick={() => handleDeleteComment(c._id)}
                               className="text-red-500 hover:text-red-400 text-xs"
                             >
-                              Delete
+                             {t("Delete")}
                             </button>
                           )}
                         </div>
@@ -452,7 +452,7 @@ const GrievanceStatus = () => {
                   rows={2}
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Add a comment..."
+                   placeholder={t("addComment")}
                   className="flex-1 bg-[#1f1f23] border border-gray-600 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#6c584c] resize-none"
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && !e.shiftKey) {
@@ -466,30 +466,30 @@ const GrievanceStatus = () => {
                   disabled={submittingComment || !newComment.trim()}
                   className="self-end px-5 py-2 bg-[#6c584c] hover:opacity-90 disabled:opacity-50 rounded-xl text-sm transition"
                 >
-                  {submittingComment ? "..." : "Post"}
+                  {submittingComment ? t("posting") : t("post")}
                 </button>
               </div>
             </Section>
 
             {/* FEEDBACK SECTION */}
-            <Section title="Feedback" icon="⭐">
+            <Section title={t("feedback")} icon="⭐">
 
               {feedbackSubmitted && feedback ? (
                 /* Already submitted — show read-only */
                 <div>
                   <p className="text-sm text-green-400 mb-4 flex items-center gap-2">
-                    ✅ Feedback submitted
+                   {t("feedbackSubmitted")}
                   </p>
                   <div className="space-y-3">
                     <div>
                       <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-                        Your Rating
+                       {t("yourRating")}
                       </p>
                       <StarRating value={feedback.rating} readonly />
                     </div>
                     <div>
                       <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-                        Marked as Resolved
+                       {t("markedResolved")}
                       </p>
                       <span
                         className={`text-sm font-semibold ${
@@ -502,7 +502,7 @@ const GrievanceStatus = () => {
                     {feedback.comments?.length > 0 && (
                       <div>
                         <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
-                          Your Comment
+                        {t("yourComment")}
                         </p>
                         <p className="text-sm text-gray-300">
                           {feedback.comments[0]}
@@ -515,13 +515,13 @@ const GrievanceStatus = () => {
                 /* Show feedback form only when resolved */
                 <div className="space-y-5">
                   <p className="text-sm text-gray-400">
-                    Your complaint has been marked as resolved. Please share your feedback.
+                   {t("feedbackMessage")}
                   </p>
 
                   {/* Star rating */}
                   <div>
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
-                      Rate the resolution
+                     {t("rateResolution")}
                     </p>
                     <StarRating
                       value={feedbackForm.rating}
@@ -534,7 +534,7 @@ const GrievanceStatus = () => {
                   {/* Resolved toggle */}
                   <div>
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
-                      Was your issue actually resolved?
+                    {t("issueResolved")}
                     </p>
                     <div className="flex gap-3">
                       <button
@@ -547,7 +547,7 @@ const GrievanceStatus = () => {
                             : "bg-transparent border-gray-600 text-gray-400 hover:border-gray-500"
                         }`}
                       >
-                        ✅ Yes, resolved
+                      {t("yesResolved")}
                       </button>
                       <button
                         onClick={() =>
@@ -559,12 +559,12 @@ const GrievanceStatus = () => {
                             : "bg-transparent border-gray-600 text-gray-400 hover:border-gray-500"
                         }`}
                       >
-                        ❌ No, reopen it
+                       {t("noReopen")}
                       </button>
                     </div>
                     {!feedbackForm.resolved && (
                       <p className="text-xs text-red-400 mt-2">
-                        Selecting "No" will reopen your grievance.
+                      {t("reopenWarning")}
                       </p>
                     )}
                   </div>
@@ -572,7 +572,7 @@ const GrievanceStatus = () => {
                   {/* Optional comment */}
                   <div>
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
-                      Additional Comments (optional)
+                       {t("additionalComments")}
                     </p>
                     <textarea
                       rows={3}
@@ -583,7 +583,7 @@ const GrievanceStatus = () => {
                           comments: e.target.value,
                         }))
                       }
-                      placeholder="Any additional thoughts..."
+                      placeholder={t("additionalPlaceholder")}
                       className="w-full bg-[#1f1f23] border border-gray-600 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#6c584c] resize-none"
                     />
                   </div>
@@ -593,13 +593,13 @@ const GrievanceStatus = () => {
                     disabled={submittingFeedback || feedbackForm.rating === 0}
                     className="px-6 py-2.5 bg-[#6c584c] hover:opacity-90 disabled:opacity-50 rounded-xl text-sm font-medium transition"
                   >
-                    {submittingFeedback ? "Submitting..." : "Submit Feedback"}
+                    {submittingFeedback ? t("submitting") : t("submitFeedback")}
                   </button>
                 </div>
               ) : (
                 /* Not yet resolved */
                 <p className="text-gray-500 text-sm">
-                  Feedback will be available once your grievance is marked as resolved.
+                  {t("feedbackAvailable")}
                 </p>
               )}
             </Section>

@@ -221,7 +221,30 @@
   "descriptionPlaceholder": "আপনার সমস্যার বর্ণনা দিন...",
     "listening": "🔴 {{language}} এ শুনছে… বন্ধ করতে মাইক্রোফোন চাপুন",
   "selectLanguageInstruction": "নিচে ভাষা নির্বাচন করুন, তারপর কথা বলতে মাইক্রোফোন চাপুন",
-  "selectedLanguage": "নির্বাচিত ভাষা"
+  "selectedLanguage": "নির্বাচিত ভাষা",
+    "feedbackSubmitted": "ফিডব্যাক জমা দেওয়া হয়েছে",
+  "yourRating": "আপনার রেটিং",
+  "markedResolved": "সমাধান হিসেবে চিহ্নিত",
+  "yourComment": "আপনার মন্তব্য",
+  "feedbackMessage": "আপনার অভিযোগ সমাধান করা হয়েছে। অনুগ্রহ করে আপনার মতামত দিন।",
+  "rateResolution": "সমাধান রেট করুন",
+  "issueResolved": "আপনার সমস্যা কি সত্যিই সমাধান হয়েছে?",
+  "yesResolved": "হ্যাঁ, সমাধান হয়েছে",
+  "noReopen": "না — পুনরায় খুলুন",
+  "reopenWarning": "'না' নির্বাচন করলে আপনার অভিযোগ পুনরায় খোলা হবে।",
+    "additionalComments": "অতিরিক্ত মন্তব্য (ঐচ্ছিক)",
+  "additionalPlaceholder": "কোনো অতিরিক্ত মতামত...",
+  "submitFeedback": "ফিডব্যাক জমা দিন",
+  "submitting": "জমা দেওয়া হচ্ছে...",
+  "feedbackAvailable": "আপনার অভিযোগ সমাধান হলে ফিডব্যাক উপলব্ধ হবে।",
+    "feedback": "প্রতিক্রিয়া",
+      "comments": "মন্তব্য",
+  "noComments": "এখনও কোনো মন্তব্য নেই। প্রথম মন্তব্য করুন।",
+  "user": "ব্যবহারকারী",
+    "addComment": "মন্তব্য লিখুন...",
+  "post": "পোস্ট করুন",
+  "posting": "পোস্ট করা হচ্ছে...",
+   "editComplaint": "অভিযোগ সম্পাদনা করুন"
   
 }
 
