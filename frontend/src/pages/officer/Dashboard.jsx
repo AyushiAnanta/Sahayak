@@ -103,7 +103,7 @@ const OfficerDashboard = () => {
             {recent.length > 0 && (
               <div>
                 <h2 className="text-lg font-semibold text-gray-300 mb-4">
-                  🔥 High Priority — Needs Attention
+                  High Priority — Needs Attention
                 </h2>
                 <div className="space-y-3">
                   {recent.map((t) => (
