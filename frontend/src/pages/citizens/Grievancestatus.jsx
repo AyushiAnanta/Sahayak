@@ -39,7 +39,8 @@ const STATUS_CONFIG = {
 };
 
 // PRIORITY BADGE 
-const PriorityBadge = ({ score, t }) => {
+const PriorityBadge = ({ score }) => {
+  const { t } = useTranslation();
   if (score == null) return <span className="text-gray-500">{t("na")}</span>;
 
   const level =
@@ -305,7 +306,7 @@ const GrievanceStatus = () => {
                 </Field>
 
                 <Field label="Priority">
-                  <PriorityBadge score={grievance.priorityScore} />
+                  <PriorityBadge score={grievance.priorityScore} t={t} />
                 </Field>
 
                 <Field label="District">
