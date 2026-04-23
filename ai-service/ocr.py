@@ -13,7 +13,7 @@ def extract_text_from_bytes(file_bytes: bytes) -> str:
     b64 = image_to_base64(file_bytes)
     
     response = client.chat.completions.create(
-        model="meta-llama/llama-4-scout-17b-16e-instruct",  # Groq's vision model
+        model="meta-llama/llama-4-scout-17b-16e-instruct", 
         messages=[
             {
                 "role": "user",
@@ -50,7 +50,6 @@ def extract_text(file_bytes: bytes, file_type: str) -> str:
                 if page_text and page_text.strip():
                     text += page_text
                 else:
-                    # Fall back to Groq vision for scanned pages
                     buf = io.BytesIO()
                     page.to_image(resolution=200).original.save(buf, format="PNG")
                     text += extract_text_from_bytes(buf.getvalue())

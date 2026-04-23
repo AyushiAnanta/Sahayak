@@ -4,9 +4,7 @@ import numpy as np
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
-# In production replace this with a real DB fetch
-# For now it's an in-memory store you'll swap out
-grievance_store = []  # list of {"id": str, "text": str, "embedding": np.array}
+grievance_store = [] 
 
 SIMILARITY_THRESHOLD = 0.85
 
@@ -19,7 +17,6 @@ def detect_duplicate(grievance_id: str, text: str):
         if score >= SIMILARITY_THRESHOLD:
             similar.append({"id": g["id"], "similarity_score": float(score)})
 
-    # Store the new one
     grievance_store.append({
         "id": grievance_id or str(len(grievance_store)),
         "text": text,

@@ -6,7 +6,7 @@ import { getFeedback, submitFeedback } from "../../api/feedback";
 import Navbar from "../../components/Navbar";
 import { useTranslation } from "react-i18next";
 
-// ── STATUS CONFIG ────────────────────────────────────────────────────────────
+// STATUS CONFIG 
 const STATUS_CONFIG = {
   pending: {
     label: "Pending",
@@ -38,7 +38,7 @@ const STATUS_CONFIG = {
   },
 };
 
-// ── PRIORITY BADGE ───────────────────────────────────────────────────────────
+// PRIORITY BADGE 
 const PriorityBadge = ({ score, t }) => {
   if (score == null) return <span className="text-gray-500">{t("na")}</span>;
 
@@ -59,7 +59,7 @@ const PriorityBadge = ({ score, t }) => {
 };
 
 
-// ── STAR RATING ──────────────────────────────────────────────────────────────
+//  STAR RATING 
 const StarRating = ({ value, onChange, readonly = false }) => (
   <div className="flex gap-1">
     {[1, 2, 3, 4, 5].map((s) => (
@@ -78,7 +78,7 @@ const StarRating = ({ value, onChange, readonly = false }) => (
 );
 
 
-// ── SECTION CARD ─────────────────────────────────────────────────────────────
+//SECTION CARD 
 const Section = ({ title, icon, children }) => (
   <div className="bg-[#2a2a2f] border border-gray-700/60 rounded-2xl p-6">
     <h3 className="text-[#e8d4a2] font-semibold text-lg mb-5 flex items-center gap-2">
@@ -88,16 +88,13 @@ const Section = ({ title, icon, children }) => (
   </div>
 );
 
-// ── FIELD ───────────────────────────────────────────────────────────
+// FIELD 
 const Field = ({ label, children }) => (
   <div>
     <p className="text-xs text-gray-500 uppercase mb-1">{label}</p>
     <div className="text-gray-200 text-sm">{children}</div>
   </div>
 );
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
 const GrievanceStatus = () => {
   const { t } = useTranslation();  
   const navigate = useNavigate();
@@ -125,7 +122,6 @@ const GrievanceStatus = () => {
   const [submittingFeedback, setSubmittingFeedback] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
-  // ── FETCH ALL DATA ─────────────────────────────────────────────────────────
   useEffect(() => {
     if (!grievanceId) {
       setError(t("noGrievanceId"));
@@ -144,7 +140,6 @@ const GrievanceStatus = () => {
         setGrievance(gRes?.data?.data || gRes?.data);
         setComments(cRes?.data?.data || cRes?.data || []);
 
-        // Feedback may not exist yet — ignore 404
         try {
           const fRes = await getFeedback(grievanceId);
           const fb = fRes?.data?.data || fRes?.data;
@@ -163,7 +158,7 @@ const GrievanceStatus = () => {
     fetchAll();
   }, [grievanceId]);
 
-  // ── ADD COMMENT ────────────────────────────────────────────────────────────
+  // ADD COMMENT
   const handleAddComment = async () => {
     if (!newComment.trim()) return;
     try {
@@ -179,7 +174,7 @@ const GrievanceStatus = () => {
     }
   };
 
-  // ── DELETE COMMENT ─────────────────────────────────────────────────────────
+  //  DELETE COMMENT 
   const handleDeleteComment = async (commentId) => {
     if (!window.confirm("Delete this comment?")) return;
     try {
@@ -190,7 +185,7 @@ const GrievanceStatus = () => {
     }
   };
 
-  // ── SUBMIT FEEDBACK ────────────────────────────────────────────────────────
+  //SUBMIT FEEDBACK
   const handleSubmitFeedback = async () => {
     if (feedbackForm.rating === 0) {
       alert(t("giveRating"));
@@ -208,10 +203,10 @@ const GrievanceStatus = () => {
     }
   };
 
-  // ── STATUS CONFIG HELPERS ──────────────────────────────────────────────────
+  // STATUS CONFIG HELPERS
   const statusCfg = STATUS_CONFIG[grievance?.status] || STATUS_CONFIG["pending"];
 
-  // ── RENDER ─────────────────────────────────────────────────────────────────
+  //  RENDER
   return (
     <div className="min-h-screen bg-[#1f1f23] text-white">
       <Navbar
@@ -248,7 +243,7 @@ const GrievanceStatus = () => {
         {!loading && grievance && (
           <div className="space-y-6">
 
-            {/* ── COMPLAINT CARD ───────────────────────────────────────────── */}
+            {/*COMPLAINT CARD*/}
             <div className={`bg-[#2a2a2f] border rounded-2xl p-7 shadow-xl ${statusCfg.bg}`}>
 
               {/* Header row */}
@@ -398,7 +393,7 @@ const GrievanceStatus = () => {
               )}
             </div>
 
-            {/* ── COMMENTS SECTION ─────────────────────────────────────────── */}
+            {/* COMMENTS SECTION  */}
             <Section title="Comments" icon="💬">
 
               {/* Existing comments */}
@@ -475,7 +470,7 @@ const GrievanceStatus = () => {
               </div>
             </Section>
 
-            {/* ── FEEDBACK SECTION ─────────────────────────────────────────── */}
+            {/* FEEDBACK SECTION */}
             <Section title="Feedback" icon="⭐">
 
               {feedbackSubmitted && feedback ? (

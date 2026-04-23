@@ -7,7 +7,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sendEmailNotification } from "../utils/email.js";
 
-// GET /api/officer/tasks — fetches all grievances assigned to the logged-in officer
+// GET /api/officer/tasks
 export const getAssignedTasks = asyncHandler(async (req, res) => {
   const { status, page = 1, limit = 10 } = req.query;
 
@@ -27,7 +27,7 @@ export const getAssignedTasks = asyncHandler(async (req, res) => {
 });
 
 
-// PUT /api/officer/tasks/:id/progress — marks a task as in_progress and notifies the user
+// PUT /api/officer/tasks/:id/progress 
 export const updateTaskProgress = asyncHandler(async (req, res) => {
   const { remark } = req.body;
 
@@ -43,7 +43,6 @@ export const updateTaskProgress = asyncHandler(async (req, res) => {
   grievance.status = "in_progress";
   await grievance.save();
 
-  // Log the progress update
   await StatusLog.create({
     grievanceId: grievance._id,
     userId: grievance.userId,
@@ -77,7 +76,7 @@ export const updateTaskProgress = asyncHandler(async (req, res) => {
 });
 
 
-// PUT /api/officer/tasks/:id/complete — marks a task as resolved and notifies the user
+// PUT /api/officer/tasks/:id/complete 
 export const completeTask = asyncHandler(async (req, res) => {
   const { remark } = req.body;
 
@@ -93,7 +92,6 @@ export const completeTask = asyncHandler(async (req, res) => {
   grievance.status = "resolved";
   await grievance.save();
 
-  // Log the completion
   await StatusLog.create({
     grievanceId: grievance._id,
     userId: grievance.userId,

@@ -26,7 +26,6 @@ const GoogleSuccess = () => {
       try {
         const res = await axiosInstance.get("/auth/me");
 
-        // FIXED HERE
         const userData = res?.data?.data;
 
         if (!userData) {
@@ -35,7 +34,6 @@ const GoogleSuccess = () => {
 
         console.log("✅ GOOGLE USER:", userData);
 
-        // Save user + token
         login(userData, token);
 
         // Redirect

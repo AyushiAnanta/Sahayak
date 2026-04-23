@@ -15,8 +15,6 @@ const LANG_TO_RECOGNITION = {
   mr: "mr-IN",
 };
 
-// Categories match department category_handled values exactly.
-// Subcategories are common complaint types within each domain.
 const CATEGORY_MAP = {
   Agriculture: ["cropDamage", "irrigationIssue", "fertilizerSupply", "pestControl", "other"],
   ConsumerAffairs: ["overcharging", "defectiveProduct", "falseAdvertisement", "refundIssue", "other"],
@@ -62,8 +60,6 @@ const LANGUAGES = [
   const [recording, setRecording] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  // ─── SPEECH ──────────────────────────────────────────────────────────────
 
   const startListening = () => {
     const SpeechRecognition =
@@ -114,7 +110,6 @@ const LANGUAGES = [
     setRecording(false);
   };
 
-  // ─── FILE HANDLER ─────────────────────────────────────────────────────────
 
   const handleFile = async (file) => {
     setForm((prev) => ({ ...prev, file }));
@@ -155,7 +150,6 @@ const LANGUAGES = [
     setError("");
   };
 
-  // ─── SUBMIT ───────────────────────────────────────────────────────────────
 
   const handleSubmit = async () => {
     if (!form.district || !form.pincode) {
@@ -201,8 +195,6 @@ const LANGUAGES = [
       setLoading(false);
     }
   };
-
-  // ─── RENDER ──────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-[#1f1f23] text-white">

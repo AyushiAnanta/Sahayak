@@ -6,14 +6,14 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 
-// GET /api/department/all — returns all departments in the system
+// GET /api/department/all
 export const getAllDepartments = asyncHandler(async (req, res) => {
   const departments = await Department.find().sort({ name: 1 });
   return res.status(200).json(new ApiResponse(200, departments));
 });
 
 
-// GET /api/department/:id — returns a single department by its id
+// GET /api/department/:id 
 export const getDepartmentById = asyncHandler(async (req, res) => {
   const department = await Department.findById(req.params.id);
   if (!department) throw new ApiError(404, "Department not found");
@@ -21,7 +21,7 @@ export const getDepartmentById = asyncHandler(async (req, res) => {
 });
 
 
-// GET /api/department/:id/grievances — fetches all grievances assigned to a specific department
+// GET /api/department/:id/grievances 
 export const getDepartmentGrievances = asyncHandler(async (req, res) => {
   const { status, page = 1, limit = 10 } = req.query;
 

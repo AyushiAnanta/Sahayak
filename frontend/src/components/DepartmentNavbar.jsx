@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next"; // ✅ ADDED
+import { useTranslation } from "react-i18next";
 
 const DepartmentNavbar = ({ user, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { t, i18n } = useTranslation(); // ✅ ADDED
+  const { t, i18n } = useTranslation();
 
   const [open, setOpen] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -20,7 +20,7 @@ const DepartmentNavbar = ({ user, onLogout }) => {
 
   const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${user?.name || "officer"}`;
 
-  // 🌍 Languages
+  // Languages
   const languages = [
     { code: "en", label: "English" },
     { code: "hi", label: "हिन्दी" },
@@ -28,19 +28,16 @@ const DepartmentNavbar = ({ user, onLogout }) => {
     { code: "bn", label: "বাংলা" },
   ];
 
-  // ✅ Apply saved language on load
   useEffect(() => {
     const savedLang = localStorage.getItem("lang") || "en";
     setSelectedLang(savedLang);
     i18n.changeLanguage(savedLang);
   }, []);
 
-  // ✅ RTL support (for Urdu)
   useEffect(() => {
     document.body.dir = i18n.language === "ur" ? "rtl" : "ltr";
   }, [i18n.language]);
 
-  // 🔐 CLOSE DROPDOWNS
   useEffect(() => {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -55,7 +52,6 @@ const DepartmentNavbar = ({ user, onLogout }) => {
     return () => window.removeEventListener("click", handler);
   }, []);
 
-  // ✅ ACTIVE LINK
   const isActive = (path) =>
     location.pathname === path ? "text-white font-semibold" : "text-gray-300";
 
@@ -108,7 +104,7 @@ const DepartmentNavbar = ({ user, onLogout }) => {
                     <button
                       key={lang.code}
                       onClick={async () => {
-                      await i18n.changeLanguage(lang.code); // ✅ WAIT for change
+                      await i18n.changeLanguage(lang.code); 
 
                       setSelectedLang(lang.code);
 
@@ -116,7 +112,6 @@ const DepartmentNavbar = ({ user, onLogout }) => {
 
                       setLangOpen(false);
 
-                      // 🔥 FORCE RE-RENDER (important for instant update)
                       window.dispatchEvent(new Event("languageChanged"));
                     }}
                       className={`w-full flex items-center justify-between px-4 py-2 transition

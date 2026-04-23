@@ -37,7 +37,6 @@ const OfficerDashboard = () => {
         resolved:    tasks.filter((t) => t.status === "resolved").length,
       });
 
-      // Show top 5 by priority for recent section
       const sorted = [...tasks]
         .filter((t) => t.status !== "resolved")
         .sort((a, b) => b.priorityScore - a.priorityScore)

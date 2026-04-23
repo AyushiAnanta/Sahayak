@@ -9,13 +9,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 const AI_SERVICE = process.env.PYTHON_AI_SERVICE_URL || "http://localhost:8001";
 
 
-// ═══════════════════════════════════════════════════════════════════════════════
-// INTERNAL HELPER FUNCTIONS
-// These are called directly by grievance.controller.js — not through HTTP
-// ═══════════════════════════════════════════════════════════════════════════════
-
-
-// Detects language and translates text to English — called after upload or on text submission
 export const runTranslate = async (text, targetLanguage = "en") => {
   try {
     const { data } = await axios.post(`${AI_SERVICE}/translate`, {
@@ -26,7 +19,7 @@ export const runTranslate = async (text, targetLanguage = "en") => {
     const translated = data.translated_text || text;
     const detected = data.detected_language || "en";
 
-    // ✅ if translation returned same text, force-use original
+
     return {
       translatedText: translated,
       detectedLanguage: detected,
@@ -38,7 +31,6 @@ export const runTranslate = async (text, targetLanguage = "en") => {
 };
 
 
-// Classifies grievance and returns category, subcategory, keywords, priority, summary
 export const runClassify = async (text) => {
   try {
     const { data } = await axios.post(`${AI_SERVICE}/classify`, { text });
@@ -64,7 +56,6 @@ export const runClassify = async (text) => {
 };
 
 
-// Checks if a similar grievance already exists using sentence embeddings
 export const runDuplicateCheck = async (grievanceId, text) => {
   try {
     const { data } = await axios.post(`${AI_SERVICE}/detect-duplicate`, {
@@ -82,8 +73,6 @@ export const runDuplicateCheck = async (grievanceId, text) => {
   }
 };
 
-
-// Generates simplified explanation in user's preferred language
 export const runExplain = async (text, language = "en") => {
   try {
     const { data } = await axios.post(`${AI_SERVICE}/explain`, {
@@ -98,7 +87,6 @@ export const runExplain = async (text, language = "en") => {
 };
 
 
-// Runs OCR on a local file path — sends file bytes to Python service
 
 export const runOCR = async (localPath, originalname, mimetype) => {
   console.log("runninggggggggggggggg")
@@ -122,14 +110,13 @@ export const runOCR = async (localPath, originalname, mimetype) => {
       timeout: 30000,
     });
     console.log("dataaaa",data)
-    return data.extracted_text || "";   // <-- match your FastAPI response
+    return data.extracted_text || "";  
   } catch (err) {
     console.error("[AI] OCR failed:", err.message);
     return "";
   }
 };
 
-// Saves a full AI processing log entry to MongoDB for audit/explainability
 export const saveAILog = async ({
   grievanceId,
   detectedLanguage,
@@ -150,17 +137,10 @@ export const saveAILog = async ({
       status,
     });
   } catch (err) {
-    // Log creation failure should never crash the main flow
     console.error("[AI] saveAILog failed:", err.message);
   }
 };
 
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// ROUTE HANDLERS
-// These are the HTTP endpoints for direct API testing via Postman
-// In normal app flow these are NOT called — grievance.controller calls helpers above
-// ═══════════════════════════════════════════════════════════════════════════════
 
 
 // POST /api/ai/translate
@@ -218,7 +198,7 @@ export const explain = asyncHandler(async (req, res) => {
 });
 
 
-// POST /api/ai/ocr  — multipart/form-data, field name: "file"
+// POST /api/ai/ocr 
 export const ocr = asyncHandler(async (req, res) => {
   const localPath = req.file?.path;
   if (!localPath) throw new ApiError(400, "No file provided");

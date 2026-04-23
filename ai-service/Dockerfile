@@ -2,7 +2,6 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install system dependencies for OCR and building C-extensions
 RUN apt-get update && apt-get install -y \
     build-essential \
     libgl1 \
@@ -11,8 +10,6 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-download the model so it's ready inside the container
-# Replace 'all-MiniLM-L6-v2' with the specific model you use in duplicate.py
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('all-MiniLM-L6-v2')"
 
 COPY . .

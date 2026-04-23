@@ -139,7 +139,7 @@ const Profile = () => {
   );
 };
 
-// 🔥 NEW INPUT COMPONENT (MODERN)
+// NEW INPUT COMPONENT (MODERN)
 const InputField = ({ label, name, value, editMode, onChange }) => {
   return (
     <div className="flex flex-col">

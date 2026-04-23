@@ -23,7 +23,7 @@ router.post("/refresh-token", refreshAccessToken);
 // Logout
 router.post("/logout", verifyJWT, logoutUser);
 
-// Current user (dashboard check)
+// Current user 
 router.get("/me", verifyJWT, getCurrentUser);
 
 export default router;
