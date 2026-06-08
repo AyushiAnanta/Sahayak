@@ -6,7 +6,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { sendEmailNotification } from "../utils/email.js";
+import { sendEmailNotification } from "../utils/Email.js";
 // Import AI helpers — these call Python internally, no HTTP needed from frontend
 import {
   runTranslate,
