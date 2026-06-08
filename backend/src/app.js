@@ -20,7 +20,7 @@ import { errorMiddleware } from "./middlewares/error.middleware.js";
 const app = express();
 
 app.use(cors({
-  origin: "https://sahayak-pink.vercel.app/",
+  origin: "https://sahayak-pink.vercel.app",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
