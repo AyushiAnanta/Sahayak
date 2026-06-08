@@ -5,7 +5,7 @@ import { User } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { sendEmailNotification } from "../utils/email.js";
+import { sendEmailNotification } from "../utils/Email.js";
 
 export const getAllGrievances = asyncHandler(async (req, res) => {
   const { status, category, district, page = 1, limit = 20 } = req.query;
