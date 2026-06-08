@@ -102,8 +102,8 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   const cookieOptions = {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true,
+    sameSite: "none",
     path: "/",
   };
 
@@ -142,13 +142,6 @@ export const logoutUser = asyncHandler(async (req, res) => {
     { $set: { refreshToken: "" } },
     { new: true }
   );
-
-  const cookieOptions = {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-    path: "/",
-  };
 
   res
     .clearCookie("accessToken", cookieOptions)
