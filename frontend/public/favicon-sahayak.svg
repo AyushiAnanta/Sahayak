@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#f9d77e" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#f9d77e" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="personGrad" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#fce8a8"/>
+      <stop offset="100%" stop-color="#e8b84b"/>
+    </radialGradient>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#333333"/>
+      <stop offset="100%" stop-color="#1e1e1e"/>
+    </radialGradient>
+    <clipPath id="circleClip">
+      <circle cx="16" cy="15" r="11"/>
+    </clipPath>
+  </defs>
+
+  <!-- bg -->
+  <rect width="32" height="32" rx="7" fill="url(#bgGrad)"/>
+
+  <!-- glow -->
+  <circle cx="16" cy="15" r="12" fill="url(#glow)"/>
+
+  <!-- globe ring -->
+  <circle cx="16" cy="15" r="11" fill="none" stroke="#f9d77e" stroke-width="1.2" opacity="0.9"/>
+
+  <!-- globe grid clipped -->
+  <g clip-path="url(#circleClip)" opacity="0.25">
+    <ellipse cx="16" cy="15" rx="4" ry="11" fill="none" stroke="#f9d77e" stroke-width="0.7"/>
+    <ellipse cx="16" cy="15" rx="8" ry="11" fill="none" stroke="#f9d77e" stroke-width="0.7"/>
+    <line x1="5" y1="11" x2="27" y2="11" stroke="#f9d77e" stroke-width="0.7"/>
+    <line x1="5" y1="15" x2="27" y2="15" stroke="#f9d77e" stroke-width="0.7"/>
+    <line x1="5" y1="19" x2="27" y2="19" stroke="#f9d77e" stroke-width="0.7"/>
+  </g>
+
+  <!-- person shadow -->
+  <ellipse cx="16" cy="25" rx="4.5" ry="0.9" fill="#6b4c30" opacity="0.45"/>
+
+  <!-- body -->
+  <path d="M11.5 24.5 Q11.5 20 12.5 18.5 Q14 17.2 16 17 Q18 17.2 19.5 18.5 Q20.5 20 20.5 24.5 Z" fill="url(#personGrad)"/>
+
+  <!-- head -->
+  <circle cx="16" cy="11.5" r="4" fill="url(#personGrad)"/>
+
+  <!-- eyes -->
+  <circle cx="14.6" cy="11" r="0.5" fill="#2a2a2a" opacity="0.45"/>
+  <circle cx="17.4" cy="11" r="0.5" fill="#2a2a2a" opacity="0.45"/>
+  <!-- smile -->
+  <path d="M14.8 12.8 Q16 13.6 17.2 12.8" fill="none" stroke="#2a2a2a" stroke-width="0.6" stroke-linecap="round" opacity="0.4"/>
+
+  <!-- arms wide open -->
+  <path d="M12.5 19.5 Q10 18.5 6.5 17.8" fill="none" stroke="#e8b84b" stroke-width="1.8" stroke-linecap="round"/>
+  <path d="M19.5 19.5 Q22 18.5 25.5 17.8" fill="none" stroke="#e8b84b" stroke-width="1.8" stroke-linecap="round"/>
+  <!-- hands -->
+  <circle cx="6.2" cy="17.6" r="1.3" fill="#fce8a8"/>
+  <circle cx="25.8" cy="17.6" r="1.3" fill="#fce8a8"/>
+</svg>
