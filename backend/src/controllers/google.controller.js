@@ -24,6 +24,6 @@ export const googleCallback = asyncHandler(async (req, res) => {
   });
 
   return res.redirect(
-  `http://localhost:5173/google-success?token=${accessToken}&role=${user.role || "user"}`
+  `${process.env.FRONTEND_URL}/google-success?token=${accessToken}&role=${user.role || "user"}`
 );
 });
