@@ -31,5 +31,5 @@ export const getCurrentUser = () => {
 
 // GOOGLE LOGIN
 export const googleLogin = () => {
-  window.location.href = "http://localhost:8000/api/google";
+  window.location.href = `${import.meta.env.VITE_API_URL}/google`;
 };

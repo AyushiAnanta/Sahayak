@@ -2,7 +2,7 @@ import React from "react";
 
 const GoogleAuthButton = () => {
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8000/api/google";
+    window.location.href = `${import.meta.env.VITE_API_URL}/google`;
   };
 
   return (
